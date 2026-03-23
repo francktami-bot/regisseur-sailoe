@@ -283,7 +283,7 @@ function showPhotos(qId){
 function markDone(id){done[id]=true;save();showPhotos();}
 
 // GOOGLE AUTH
-const REDIRECT_URI='https://eclectic-lamington-9231f3.netlify.app';
+const REDIRECT_URI='https://francktami-bot.github.io/regisseur-sailoe';
 function signIn(){
   const params=new URLSearchParams({
     client_id:CLIENT_ID,
@@ -385,7 +385,7 @@ async function doUpload(){
 
   try{
     const metadata={name:filename,mimeType:'image/jpeg'};
-    if(folderId)metadata.parents=[folderId];
+    if(folderId)metadata.parents=[folderId,{"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou cong\u00e9lateur ne fonctionne plus \u2014 que faire ?","id_photo":"L42-T2-Q3-C1","usage":"\u00c9tape 1 \u2014 bouton groupe 3 fridge unit","description":"Bouton groupe 3 fridge unit sur le tableau \u00e9lectrique \u2014 lumi\u00e8re rouge allum\u00e9e","type_photo":"Close-up","cadrage":"Frontal serr\u00e9"},{"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou cong\u00e9lateur ne fonctionne plus \u2014 que faire ?","id_photo":"L42-T2-Q3-C2","usage":"\u00c9tape 2 \u2014 molette frigo sur 7","description":"Molette de puissance \u00e0 l'int\u00e9rieur du frigo en position 7","type_photo":"Close-up","cadrage":"Frontal serr\u00e9"},{"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou cong\u00e9lateur ne fonctionne plus \u2014 que faire ?","id_photo":"L42-T2-Q3-C3","usage":"\u00c9tape 3 \u2014 molette cong\u00e9lateur au max","description":"Molette de puissance \u00e0 l'int\u00e9rieur du cong\u00e9lateur en position max","type_photo":"Close-up","cadrage":"Frontal serr\u00e9"},{"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou cong\u00e9lateur ne fonctionne plus \u2014 que faire ?","id_photo":"L42-T2-Q3-C4","usage":"\u00c9tape 4 \u2014 bouton frigo ext\u00e9rieur","description":"Bouton frigo ext\u00e9rieur sur le bateau \u2014 position allum\u00e9e","type_photo":"Close-up","cadrage":"Frontal serr\u00e9"}];
     
     const form=new FormData();
     form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
