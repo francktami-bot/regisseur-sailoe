@@ -92,9 +92,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 .btn-auth{padding:16px 32px;background:#007AFF;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;width:100%;max-width:300px}
 
 canvas{display:none}
-
-.reload-btn{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;color:#007AFF;font-size:22px;cursor:pointer;padding:4px;line-height:1}
 .topbar{position:relative}
+.reset-btn{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:#FF3B30;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;padding:5px 10px;cursor:pointer;line-height:1.2}
 </style>
 </head>
 <body>
@@ -103,7 +102,7 @@ canvas{display:none}
   <div class="topbar">
     <div class="topbar-title">Régiesseur photo</div>
     <div class="topbar-sub" id="auth-status">Sailoé — Lagoon 42</div>
-    <button class="reload-btn" onclick="forceReload()" title="Recharger l'app">&#8635;</button>
+    <button class="reset-btn" onclick="resetSession()">↺ Reset session</button>
   </div>
   <div class="section-title">Thématiques</div>
   <div id="themes-list"></div>
@@ -458,7 +457,8 @@ function uploadDone(){
 }
 function retryUpload(){doUpload();}
 
-function forceReload(){
+function resetSession(){
+  try{localStorage.removeItem('sp_done');}catch(e){}
   window.location.href=window.location.href.split('?')[0]+'?v='+Date.now();
 }
 checkAuth();
