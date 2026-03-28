@@ -387,7 +387,12 @@ async function doUpload(){
 
   try{
     const metadata={name:filename,mimeType:'image/jpeg'};
-    if(folderId)metadata.parents=[folderId];
+    if(folderId)metadata.parents=[folderId
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C1","usage":"Étape 1 — bouton groupe 3 fridge unit","description":"Bouton groupe 3 fridge unit sur le tableau de bord — lumière rouge allumée","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C2","usage":"Étape 2 — molette frigo sur 7","description":"Molette de puissance à l'intérieur du frigo en position 7","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C3","usage":"Étape 3 — molette congélateur au max","description":"Molette de puissance à l'intérieur du congélateur en position max","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C4","usage":"Étape 4 — bouton frigo extérieur","description":"Bouton frigo extérieur sur le bateau — position allumée","type_photo":"Close-up","cadrage":"Frontal serré"},
+];
 
     const form=new FormData();
     form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
