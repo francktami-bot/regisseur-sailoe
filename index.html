@@ -92,9 +92,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 .btn-auth{padding:16px 32px;background:#007AFF;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;width:100%;max-width:300px}
 
 canvas{display:none}
-
-.reload-btn{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;color:#007AFF;font-size:22px;cursor:pointer;padding:4px;line-height:1}
-.topbar{position:relative}
 </style>
 </head>
 <body>
@@ -103,7 +100,6 @@ canvas{display:none}
   <div class="topbar">
     <div class="topbar-title">Régiesseur photo</div>
     <div class="topbar-sub" id="auth-status">Sailoé — Lagoon 42</div>
-    <button class="reload-btn" onclick="forceReload()" title="Recharger l'app">&#8635;</button>
   </div>
   <div class="section-title">Thématiques</div>
   <div id="themes-list"></div>
@@ -187,7 +183,43 @@ const DRIVE_FOLDERS = {
   'T10_Divers':            '1AS5YhK1RqlwcWJlP9jafOlnNpmD2_wH0',
 };
 
-const PHOTOS=[{"thematique":"T2_Energie","id_question":"L42-T2-Q2","type_question":"Diagnostic","question":"Il n'y a plus de 220V / courant alternatif à bord — que faire ?","id_photo":"L42-T2-Q2-P1","usage":"Situation initiale — vérification voyant","description":"Vue d'ensemble du tableau électrique avec le convertisseur « Inverter » en dessous — bouton visible","type_photo":"Plan large","cadrage":"Vue ensemble"},{"thematique":"T2_Energie","id_question":"L42-T2-Q2","type_question":"Diagnostic","question":"Il n'y a plus de 220V / courant alternatif à bord — que faire ?","id_photo":"L42-T2-Q2-C1","usage":"Vérification écran 220","description":"Écran du convertisseur affichant 220 — aiguille en position normale","type_photo":"Close-up","cadrage":"Frontal serré"},{"thematique":"T2_Energie","id_question":"L42-T2-Q2","type_question":"Diagnostic","question":"Il n'y a plus de 220V / courant alternatif à bord — que faire ?","id_photo":"L42-T2-Q2-C2","usage":"Action corrective — disjoncteur coursive","description":"Main réenclenche le disjoncteur dans la coursive","type_photo":"Close-up","cadrage":"Frontal serré"},{"thematique":"T2_Energie","id_question":"L42-T2-Q2","type_question":"Diagnostic","question":"Il n'y a plus de 220V / courant alternatif à bord — que faire ?","id_photo":"L42-T2-Q2-C3","usage":"État résolu — prise fonctionnelle","description":"Prise avec appareil branché, chargement actif visible","type_photo":"Close-up","cadrage":"Frontal serré"},{"thematique":"T5_Annexe_Mise_a_Leau","id_question":"L42-T5-Q9","type_question":"Diagnostic","question":"Pourquoi le winch électrique ne fonctionne pas ?","id_photo":"L42-T5-Q9-P1","usage":"Identification boîtier — étape 1","description":"Vue d'ensemble du boîtier de disjoncteurs thermiques dans la coursive avant tribord — étiquettes ancre, guindeau, winch, selles convertibles visibles","type_photo":"Plan large","cadrage":"Vue d'ensemble"},{"thematique":"T5_Annexe_Mise_a_Leau","id_question":"L42-T5-Q9","type_question":"Diagnostic","question":"Pourquoi le winch électrique ne fonctionne pas ?","id_photo":"L42-T5-Q9-C1","usage":"Action corrective disjoncteur — étape 1","description":"Close-up du disjoncteur thermique « winch » sauté puis remis en position normale","type_photo":"Close-up","cadrage":"Gros plan détail"},{"thematique":"T5_Annexe_Mise_a_Leau","id_question":"L42-T5-Q9","type_question":"Diagnostic","question":"Pourquoi le winch électrique ne fonctionne pas ?","id_photo":"L42-T5-Q9-C2","usage":"Coupe-circuits cale moteur — étape 2","description":"Close-up des coupe-circuits domestiques (phase et neutre) dans la cale moteur — tous les deux sur ON","type_photo":"Close-up","cadrage":"Gros plan détail"},{"thematique":"T5_Annexe_Mise_a_Leau","id_question":"L42-T5-Q9","type_question":"Diagnostic","question":"Pourquoi le winch électrique ne fonctionne pas ?","id_photo":"L42-T5-Q9-C3","usage":"Téton passage manuel — étape 4","description":"Close-up du téton au centre du winch — main qui enfonce le téton avec la manette pour basculer en mode manuel","type_photo":"Close-up","cadrage":"Gros plan détail"},{"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-P1","usage":"Identification bouton — étape 1","description":"Bouton groupe 3 fridge unit sur le tableau électrique — voyant rouge allumé visible","type_photo":"Plan large","cadrage":"Vue ensemble"},{"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C1","usage":"Action allumage bouton — étape 1","description":"Main appuyant sur le bouton groupe 3 fridge unit","type_photo":"Close-up","cadrage":"Frontal serré"},{"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C2","usage":"Molettes frigo et congélateur — étapes 2 et 3","description":"Molette de puissance frigo sur 7 et molette congélateur au maximum","type_photo":"Close-up","cadrage":"Frontal serré"},{"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C3","usage":"Bouton frigo extérieur","description":"Bouton frigo extérieur sur le bateau — relié au même bouton tableau","type_photo":"Close-up","cadrage":"Frontal serré"},{"thematique":"T2_Energie","id_question":"L42-T2-Q14","type_question":"Diagnostic","question":"Comment brancher le bateau au quai et vérifier que le 220V fonctionne ?","id_photo":"L42-T2-Q14-P1","usage":"Branchement câble quai — étape 1","description":"Main tenant le câble, prise descendue vers le quai sans toucher l'eau","type_photo":"Plan large","cadrage":"Vue ensemble"},{"thematique":"T2_Energie","id_question":"L42-T2-Q14","type_question":"Diagnostic","question":"Comment brancher le bateau au quai et vérifier que le 220V fonctionne ?","id_photo":"L42-T2-Q14-C1","usage":"Vérification compatibilité connectique — étape 1","description":"Connectique câble et prise quai — compatibilité visible","type_photo":"Close-up","cadrage":"Frontal serré"},{"thematique":"T2_Energie","id_question":"L42-T2-Q14","type_question":"Diagnostic","question":"Comment brancher le bateau au quai et vérifier que le 220V fonctionne ?","id_photo":"L42-T2-Q14-C2","usage":"Écran 220 aiguille OK — étape 2","description":"Écran 220 du tableau électrique — aiguille sur 220","type_photo":"Close-up","cadrage":"Frontal serré"},{"thematique":"T2_Energie","id_question":"L42-T2-Q14","type_question":"Diagnostic","question":"Comment brancher le bateau au quai et vérifier que le 220V fonctionne ?","id_photo":"L42-T2-Q14-C3","usage":"Écran 220 aiguille NOK — étape 2","description":"Écran 220 du tableau électrique — aiguille en dessous de 220","type_photo":"Close-up","cadrage":"Frontal serré"}];
+const PHOTOS = [
+  // ── T7 — Instruments ──────────────────────────────────────────
+  {"thematique":"T7_Instruments","id_question":"L42-T7-Q10","type_question":"Diagnostic","question":"La prise USB de la table à cartes ne fonctionne pas — que faire ?","id_photo":"L42-T7-Q10-P1","usage":"Situation initiale — contexte","description":"Table à cartes, prise USB visible, téléphone non branché","type_photo":"Plan large","cadrage":"Vue ensemble"},
+  {"thematique":"T7_Instruments","id_question":"L42-T7-Q10","type_question":"Diagnostic","question":"La prise USB de la table à cartes ne fonctionne pas — que faire ?","id_photo":"L42-T7-Q10-C1","usage":"Vérification — radio allumée ?","description":"Radio en position OFF, bouton ON visible","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T7_Instruments","id_question":"L42-T7-Q10","type_question":"Diagnostic","question":"La prise USB de la table à cartes ne fonctionne pas — que faire ?","id_photo":"L42-T7-Q10-C2","usage":"Action corrective — allumer la radio","description":"Main appuyant sur le bouton ON de la radio","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T7_Instruments","id_question":"L42-T7-Q10","type_question":"Diagnostic","question":"La prise USB de la table à cartes ne fonctionne pas — que faire ?","id_photo":"L42-T7-Q10-C3","usage":"État résolu — prise active","description":"Prise USB avec téléphone branché et icône de charge visible","type_photo":"Close-up","cadrage":"Frontal serré"},
+
+  // ── T2 — Énergie ──────────────────────────────────────────────
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q12","type_question":"Diagnostic","question":"Je me lève le matin et je veux vérifier les tensions des batteries — comment faire et que faire si elles sont basses ?","id_photo":"L42-T2-Q12-P1","usage":"Situation initiale — contexte","description":"Tableau de bord — bouton signe batterie visible","type_photo":"Plan large","cadrage":"Vue ensemble"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q12","type_question":"Diagnostic","question":"Je me lève le matin et je veux vérifier les tensions des batteries — comment faire et que faire si elles sont basses ?","id_photo":"L42-T2-Q12-C1","usage":"Vérification — lire les tensions","description":"Bouton batterie — appui et affichage des trois tensions à l'écran","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q12","type_question":"Diagnostic","question":"Je me lève le matin et je veux vérifier les tensions des batteries — comment faire et que faire si elles sont basses ?","id_photo":"L42-T2-Q12-C2","usage":"Vérification — seuil critique","description":"Écran affichant les trois tensions : bord / moteur 1 / auxiliaire","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q12","type_question":"Diagnostic","question":"Je me lève le matin et je veux vérifier les tensions des batteries — comment faire et que faire si elles sont basses ?","id_photo":"L42-T2-Q12-C3","usage":"Vérification — tension basse","description":"Écran tension proche ou en dessous de 12V","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q12","type_question":"Diagnostic","question":"Je me lève le matin et je veux vérifier les tensions des batteries — comment faire et que faire si elles sont basses ?","id_photo":"L42-T2-Q12-C4","usage":"Action corrective — recharge batteries","description":"Main sur la clé de contact pour démarrage moteur","type_photo":"Close-up","cadrage":"Frontal serré"},
+
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q2","type_question":"Diagnostic","question":"Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?","id_photo":"L42-T2-Q2-P1","usage":"Situation initiale — localisation convertisseur","description":"Tableau électrique avec convertisseur \"Inverter\" visible en dessous","type_photo":"Plan large","cadrage":"Vue ensemble"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q2","type_question":"Diagnostic","question":"Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?","id_photo":"L42-T2-Q2-C1","usage":"Étape 1 — bouton convertisseur lumière rouge","description":"Bouton du convertisseur avec lumière rouge allumée","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q2","type_question":"Diagnostic","question":"Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?","id_photo":"L42-T2-Q2-C2","usage":"Étape 3 — disjoncteur 220 coursive","description":"Disjoncteur 220 dans la coursive — position réenclenchée","type_photo":"Close-up","cadrage":"Frontal serré"},
+
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C1","usage":"Étape 1 — bouton groupe 3 fridge unit","description":"Bouton groupe 3 fridge unit sur le tableau électrique — lumière rouge allumée","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C2","usage":"Étape 2 — molette frigo sur 7","description":"Molette de puissance à l'intérieur du frigo en position 7","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C3","usage":"Étape 3 — molette congélateur au max","description":"Molette de puissance à l'intérieur du congélateur en position max","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C4","usage":"Étape 4 — bouton frigo extérieur","description":"Bouton frigo extérieur sur le bateau — position allumée","type_photo":"Close-up","cadrage":"Frontal serré"},
+
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q14","type_question":"Diagnostic","question":"Comment brancher le bateau au quai et vérifier que le 220V fonctionne ?","id_photo":"L42-T2-Q14-P1","usage":"Étape 1 — branchement câble sur le quai","description":"Main tenant le câble, prise descendue vers le quai sans toucher l'eau","type_photo":"Plan large","cadrage":"Vue ensemble"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q14","type_question":"Diagnostic","question":"Comment brancher le bateau au quai et vérifier que le 220V fonctionne ?","id_photo":"L42-T2-Q14-C1","usage":"Étape 3 — écran 220 OK","description":"Écran 220 du tableau électrique — aiguille sur 220","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q14","type_question":"Diagnostic","question":"Comment brancher le bateau au quai et vérifier que le 220V fonctionne ?","id_photo":"L42-T2-Q14-C2","usage":"Étape 3 — écran 220 NOK","description":"Écran 220 du tableau électrique — aiguille en dessous de 220","type_photo":"Close-up","cadrage":"Frontal serré"},
+
+  // ── T5 — Annexe mise à l'eau ──────────────────────────────────
+  {"thematique":"T5_Annexe_Mise_a_Leau","id_question":"L42-T5-Q9","type_question":"Diagnostic","question":"Le winch électrique ne fonctionne pas — que faire ?","id_photo":"L42-T5-Q9-P1","usage":"Étape 1 — disjoncteur thermique coursive tribord","description":"Panneau disjoncteurs thermiques dans la coursive tribord — étiquette winch visible","type_photo":"Plan large","cadrage":"Vue ensemble"},
+  {"thematique":"T5_Annexe_Mise_a_Leau","id_question":"L42-T5-Q9","type_question":"Diagnostic","question":"Le winch électrique ne fonctionne pas — que faire ?","id_photo":"L42-T5-Q9-C1","usage":"Étape 2 — coupe-circuits cale moteur","description":"Coupe-circuits phase et neutre dans la cale moteur — positions ON côte à côte","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T5_Annexe_Mise_a_Leau","id_question":"L42-T5-Q9","type_question":"Diagnostic","question":"Le winch électrique ne fonctionne pas — que faire ?","id_photo":"L42-T5-Q9-C2","usage":"Étape 3 — téton mode manuel","description":"Téton du winch — position enfoncée / relevée pour passage en mode manuel","type_photo":"Close-up","cadrage":"Frontal serré"},
+
+  // ── T6 — Eau douce ────────────────────────────────────────────
+  {"thematique":"T6_Eau_Douce","id_question":"L42-T6-Q11","type_question":"Diagnostic","question":"Il n'y a plus d'eau chaude — comment en avoir ?","id_photo":"L42-T6-Q11-P1","usage":"Étape 1 — démarrer le moteur bâbord","description":"Tableau de bord moteur bâbord — main sur la clé de contact, moteur en démarrage","type_photo":"Plan large","cadrage":"Vue ensemble"},
+  {"thematique":"T6_Eau_Douce","id_question":"L42-T6-Q11","type_question":"Diagnostic","question":"Il n'y a plus d'eau chaude — comment en avoir ?","id_photo":"L42-T6-Q11-C1","usage":"Étape 2 — régler le régime à 1 200 tr/min","description":"Cadran compte-tours affichant 1 200 tours par minute","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T6_Eau_Douce","id_question":"L42-T6-Q11","type_question":"Diagnostic","question":"Il n'y a plus d'eau chaude — comment en avoir ?","id_photo":"L42-T6-Q11-C2","usage":"Résultat — eau chaude disponible","description":"Robinet eau chaude ouvert, eau chaude qui coule","type_photo":"Close-up","cadrage":"Frontal serré"},
+];
 
 let done={},currentTheme=null,currentQ=null,currentPhoto=null,stream=null,blob=null,accessToken=null;
 let usingFront=false;
@@ -311,8 +343,6 @@ function ensureAuth(cb){
   document.getElementById('authScreen').classList.add('active');
   window._pendingCb=cb;
 }
-// Override signIn pour callback
-const _origSignIn=signIn;
 
 // CAMERA
 async function openCamera(id){
@@ -368,9 +398,7 @@ function retake(){
 async function uploadToDrive(){
   if(!blob||!currentPhoto)return;
   document.getElementById('previewScreen').classList.remove('active');
-  
   if(!accessToken){
-    // Sauvegarder blob en mémoire et demander auth
     showUploadScreen('🔐','Connexion requise','Connecte ton compte Google pour envoyer vers Drive','');
     document.getElementById('btn-ok').style.display='none';
     document.getElementById('btn-retry').style.display='none';
@@ -383,14 +411,14 @@ async function uploadToDrive(){
 async function doUpload(){
   const filename=currentPhoto.id_photo+'.jpg';
   const folderId=DRIVE_FOLDERS[currentPhoto.thematique]||null;
-  
+
   showUploadScreen('☁️','Envoi en cours...',`Dossier : ${currentPhoto.thematique.replace(/_/g,' ')}`,filename);
   animateBar(0,60,1500);
 
   try{
     const metadata={name:filename,mimeType:'image/jpeg'};
     if(folderId)metadata.parents=[folderId];
-    
+
     const form=new FormData();
     form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
     form.append('file',blob,filename);
@@ -458,9 +486,6 @@ function uploadDone(){
 }
 function retryUpload(){doUpload();}
 
-function forceReload(){
-  window.location.href=window.location.href.split('?')[0]+'?v='+Date.now();
-}
 checkAuth();
 showThemes();
 </script>
