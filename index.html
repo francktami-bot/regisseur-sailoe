@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Régiesseur Photo — Sailoé v4.1</title>
+<title>Régiesseur Photo — Sailoé</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:#f2f2f7;min-height:100vh}
@@ -98,7 +98,7 @@ canvas{display:none}
 
 <div id="screen-themes" class="screen active">
   <div class="topbar">
-    <div class="topbar-title">Régiesseur photo v4.1</div>
+    <div class="topbar-title">Régiesseur photo</div>
     <div class="topbar-sub" id="auth-status">Sailoé — Lagoon 42</div>
   </div>
   <div class="section-title">Thématiques</div>
@@ -189,6 +189,10 @@ const PHOTOS = [
   {"thematique":"T2_Energie","id_question":"L42-T2-Q2","type_question":"Diagnostic","question":"Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?","id_photo":"L42-T2-Q2-C1","usage":"Étape 1 — bouton convertisseur lumière rouge","description":"Bouton du convertisseur avec lumière rouge allumée","type_photo":"Close-up","cadrage":"Frontal serré"},
   {"thematique":"T2_Energie","id_question":"L42-T2-Q2","type_question":"Diagnostic","question":"Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?","id_photo":"L42-T2-Q2-C2","usage":"Étape 3 — disjoncteur 220 coursive","description":"Disjoncteur 220 dans la coursive — position réenclenchée","type_photo":"Close-up","cadrage":"Frontal serré"},
   {"thematique":"T2_Energie","id_question":"L42-T2-Q2","type_question":"Diagnostic","question":"Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?","id_photo":"L42-T2-Q2-C3","usage":"Résultat — écran 220V confirmé","description":"Écran 220 du tableau électrique — aiguille sur 220V","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C1","usage":"Étape 1 — bouton groupe 3 fridge unit","description":"Bouton groupe 3 fridge unit sur le tableau de bord — lumière rouge allumée","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C2","usage":"Étape 2 — molette frigo sur 7","description":"Molette de puissance à l'intérieur du frigo en position 7","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C3","usage":"Étape 3 — molette congélateur au max","description":"Molette de puissance à l'intérieur du congélateur en position max","type_photo":"Close-up","cadrage":"Frontal serré"},
+  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C4","usage":"Étape 4 — bouton frigo extérieur","description":"Bouton frigo extérieur sur le bateau — position allumée","type_photo":"Close-up","cadrage":"Frontal serré"},
 ];
 
 let done={},currentTheme=null,currentQ=null,currentPhoto=null,stream=null,blob=null,accessToken=null;
@@ -387,12 +391,7 @@ async function doUpload(){
 
   try{
     const metadata={name:filename,mimeType:'image/jpeg'};
-    if(folderId)metadata.parents=[folderId
-  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C1","usage":"Étape 1 — bouton groupe 3 fridge unit","description":"Bouton groupe 3 fridge unit sur le tableau de bord — lumière rouge allumée","type_photo":"Close-up","cadrage":"Frontal serré"},
-  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C2","usage":"Étape 2 — molette frigo sur 7","description":"Molette de puissance à l'intérieur du frigo en position 7","type_photo":"Close-up","cadrage":"Frontal serré"},
-  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C3","usage":"Étape 3 — molette congélateur au max","description":"Molette de puissance à l'intérieur du congélateur en position max","type_photo":"Close-up","cadrage":"Frontal serré"},
-  {"thematique":"T2_Energie","id_question":"L42-T2-Q3","type_question":"Diagnostic","question":"Le frigo ou congélateur ne fonctionne plus — que faire ?","id_photo":"L42-T2-Q3-C4","usage":"Étape 4 — bouton frigo extérieur","description":"Bouton frigo extérieur sur le bateau — position allumée","type_photo":"Close-up","cadrage":"Frontal serré"},
-];
+    if(folderId)metadata.parents=[folderId];
 
     const form=new FormData();
     form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
