@@ -45,7 +45,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 .photo-actions{padding:0 16px 14px;display:flex;gap:8px}
 .btn-camera{flex:1;padding:11px;background:#007AFF;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer}
 .btn-skip{padding:11px 14px;background:#f2f2f7;color:#6e6e73;border:none;border-radius:10px;font-size:13px;cursor:pointer}
-.photo-done-label{padding:0 16px 12px;font-size:12px;color:#34C759;font-weight:500}
+.photo-done-label{padding:0 16px 6px;font-size:12px;color:#34C759;font-weight:500}
+.photo-done-actions{padding:0 16px 12px}
+.btn-replace{width:100%;padding:9px;background:#f2f2f7;color:#FF9500;border:none;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer}
+.preview-resolution{font-size:11px;color:rgba(255,255,255,0.6);text-align:center;margin-top:4px}
 
 /* CAMERA */
 #cameraScreen{display:none;position:fixed;inset:0;z-index:200;background:#000;flex-direction:column}
@@ -140,6 +143,7 @@ canvas{display:none}
 <div id="previewScreen">
   <div class="preview-top">
     <div class="preview-filename" id="preview-filename"></div>
+    <div class="preview-resolution" id="preview-resolution"></div>
   </div>
   <img id="previewImg" src=""/>
   <div class="preview-bottom">
@@ -183,7 +187,7 @@ const DRIVE_FOLDERS = {
   'T10_Divers':            '1AS5YhK1RqlwcWJlP9jafOlnNpmD2_wH0',
 };
 
-const PHOTOS = [{"id_photo": "L42-T2-Q2-P1", "id_question": "L42-T2-Q2", "thematique": "T2_Energie", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Situation initiale — localisation convertisseur", "description": "Tableau électrique avec convertisseur \"Inverter\" visible en dessous", "type_photo": "Plan large", "cadrage": "Vue ensemble"}, {"id_photo": "L42-T2-Q2-C1", "id_question": "L42-T2-Q2", "thematique": "T2_Energie", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 1 — bouton convertisseur lumière rouge", "description": "Bouton du convertisseur avec lumière rouge allumée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q2-C2", "id_question": "L42-T2-Q2", "thematique": "T2_Energie", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 3 — disjoncteur 220 coursive", "description": "Disjoncteur 220 dans la coursive — position réenclenchée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q2-C3", "id_question": "L42-T2-Q2", "thematique": "T2_Energie", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Résultat — écran 220V confirmé", "description": "Écran 220 du tableau électrique — aiguille sur 220V", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C1", "id_question": "L42-T2-Q3", "thematique": "T2_Energie", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 1 — bouton groupe 3 fridge unit", "description": "Bouton groupe 3 fridge unit sur le tableau de bord — lumière rouge allumée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C2", "id_question": "L42-T2-Q3", "thematique": "T2_Energie", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 2 — molette frigo sur 7", "description": "Molette de puissance à l'intérieur du frigo en position 7", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C3", "id_question": "L42-T2-Q3", "thematique": "T2_Energie", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 3 — molette congélateur au max", "description": "Molette de puissance à l'intérieur du congélateur en position max", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C4", "id_question": "L42-T2-Q3", "thematique": "T2_Energie", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 4 — bouton frigo extérieur", "description": "Bouton frigo extérieur sur le bateau — position allumée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T7-Q10-P1", "id_question": "L42-T7-Q10", "thematique": "T7_Instruments", "question": "La prise USB de la table à cartes ne fonctionne pas — que faire ?", "type_question": "Diagnostic", "usage": "Situation initiale — table à cartes", "description": "Table à cartes avec prise USB et radio visibles ensemble", "type_photo": "Plan large", "cadrage": "Vue ensemble"}, {"id_photo": "L42-T7-Q10-C1", "id_question": "L42-T7-Q10", "thematique": "T7_Instruments", "question": "La prise USB de la table à cartes ne fonctionne pas — que faire ?", "type_question": "Diagnostic", "usage": "Étape 1 — bouton ON de la radio", "description": "Bouton ON de la radio — close-up frontal", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T7-Q10-C2", "id_question": "L42-T7-Q10", "thematique": "T7_Instruments", "question": "La prise USB de la table à cartes ne fonctionne pas — que faire ?", "type_question": "Diagnostic", "usage": "Résolu — prise USB active", "description": "Prise USB de la table à cartes avec téléphone branché", "type_photo": "Close-up", "cadrage": "Frontal serré"}];
+const PHOTOS = [{"id_photo": "L42-T2-Q2-P1", "id_question": "L42-T2-Q2", "thematique": "T2_Energie", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Situation initiale — localisation convertisseur", "description": "Tableau électrique avec convertisseur \"Inverter\" visible en dessous", "type_photo": "Plan large", "cadrage": "Vue ensemble"}, {"id_photo": "L42-T2-Q2-C1", "id_question": "L42-T2-Q2", "thematique": "T2_Energie", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 1 — bouton convertisseur lumière rouge", "description": "Bouton du convertisseur avec lumière rouge allumée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q2-C2", "id_question": "L42-T2-Q2", "thematique": "T2_Energie", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 3 — disjoncteur 220 coursive", "description": "Disjoncteur 220 dans la coursive — position réenclenchée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q2-C3", "id_question": "L42-T2-Q2", "thematique": "T2_Energie", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Résultat — écran 220V confirmé", "description": "Écran 220 du tableau électrique — aiguille sur 220V", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C1", "id_question": "L42-T2-Q3", "thematique": "T2_Energie", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 1 — bouton groupe 3 fridge unit", "description": "Bouton groupe 3 fridge unit sur le tableau de bord — lumière rouge allumée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C2", "id_question": "L42-T2-Q3", "thematique": "T2_Energie", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 2 — molette frigo sur 7", "description": "Molette de puissance à l'intérieur du frigo en position 7", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C3", "id_question": "L42-T2-Q3", "thematique": "T2_Energie", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 3 — molette congélateur au max", "description": "Molette de puissance à l'intérieur du congélateur en position max", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C4", "id_question": "L42-T2-Q3", "thematique": "T2_Energie", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 4 — bouton frigo extérieur", "description": "Bouton frigo extérieur sur le bateau — position allumée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T7-Q10-P1", "id_question": "L42-T7-Q10", "thematique": "T7_Instruments", "question": "La prise USB de la table à cartes ne fonctionne pas — que faire ?", "type_question": "Diagnostic", "usage": "Situation initiale — table à cartes", "description": "Table à cartes avec prise USB et radio visibles ensemble", "type_photo": "Plan large", "cadrage": "Vue ensemble"}, {"id_photo": "L42-T7-Q10-C1", "id_question": "L42-T7-Q10", "thematique": "T7_Instruments", "question": "La prise USB de la table à cartes ne fonctionne pas — que faire ?", "type_question": "Diagnostic", "usage": "Étape 1 — bouton ON de la radio", "description": "Bouton ON de la radio — close-up frontal", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T7-Q10-C2", "id_question": "L42-T7-Q10", "thematique": "T7_Instruments", "question": "La prise USB de la table à cartes ne fonctionne pas — que faire ?", "type_question": "Diagnostic", "usage": "Résolu — prise USB active", "description": "Prise USB de la table à cartes avec téléphone branché", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T5-Q8-P1", "id_question": "L42-T5-Q8", "thematique": "T5_Annexe_Mise_a_Leau", "question": "Pourquoi le winch électrique ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Situation initiale — panneau disjoncteurs", "description": "Panneau complet avec disjoncteurs thermiques coursive avant tribord", "type_photo": "Plan large", "cadrage": "Vue ensemble"}, {"id_photo": "L42-T5-Q8-C1", "id_question": "L42-T5-Q8", "thematique": "T5_Annexe_Mise_a_Leau", "question": "Pourquoi le winch électrique ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 1 — disjoncteur winch", "description": "Disjoncteur winch en position sautée puis réenclenchée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T5-Q8-C2", "id_question": "L42-T5-Q8", "thematique": "T5_Annexe_Mise_a_Leau", "question": "Pourquoi le winch électrique ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 2 — coupe-circuits domestiques", "description": "Coupe-circuits domestiques phase et neutre en position ON et ON", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T5-Q8-C3", "id_question": "L42-T5-Q8", "thematique": "T5_Annexe_Mise_a_Leau", "question": "Pourquoi le winch électrique ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 3 — manivelle mode manuel", "description": "Manivelle insérée dans le winch — mode manuel", "type_photo": "Close-up", "cadrage": "Frontal serré"}];
 
 let done={},currentTheme=null,currentQ=null,currentPhoto=null,stream=null,blob=null,accessToken=null;
 let usingFront=false;
@@ -272,7 +276,10 @@ function showPhotos(qId){
         <span class="tag">${p.cadrage}</span>
       </div>
       ${isDone
-        ?`<div class="photo-done-label">✓ Envoyée dans Drive</div>`
+        ?`<div class="photo-done-label">✓ Envoyée dans Drive</div>
+        <div class="photo-done-actions">
+          <button class="btn-replace" onclick="replacePhoto('${p.id_photo}')">🔄 Remplacer</button>
+        </div>`
         :`<div class="photo-actions">
             <button class="btn-camera" onclick="openCamera('${p.id_photo}')">Prendre la photo</button>
             <button class="btn-skip" onclick="markDone('${p.id_photo}')">Déjà prise</button>
@@ -281,6 +288,12 @@ function showPhotos(qId){
   });
 }
 function markDone(id){done[id]=true;save();showPhotos();}
+function replacePhoto(id){
+  const p=PHOTOS.find(x=>x.id_photo===id);
+  if(!p)return;
+  // Rouvrir la caméra — l'upload écrasera le fichier Drive existant
+  openCamera(id);
+}
 
 // GOOGLE AUTH
 const REDIRECT_URI='https://francktami-bot.github.io/regisseur-sailoe';
@@ -323,7 +336,7 @@ async function startStream(){
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
   try{
     stream=await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:usingFront?'user':'environment'}
+      video:{facingMode:usingFront?'user':'environment',width:{ideal:3840},height:{ideal:2160}}
     });
     document.getElementById('video').srcObject=stream;
   }catch(e){
@@ -347,6 +360,7 @@ function takePhoto(){
     const url=URL.createObjectURL(b);
     document.getElementById('previewImg').src=url;
     document.getElementById('preview-filename').textContent=currentPhoto.id_photo+'.jpg';
+    document.getElementById('preview-resolution').textContent=c.width+'×'+c.height+' px';
     closeCamera();
     document.getElementById('previewScreen').classList.add('active');
   },'image/jpeg',0.92);
