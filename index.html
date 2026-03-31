@@ -45,7 +45,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 .photo-actions{padding:0 16px 14px;display:flex;gap:8px}
 .btn-camera{flex:1;padding:11px;background:#007AFF;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer}
 .btn-skip{padding:11px 14px;background:#f2f2f7;color:#6e6e73;border:none;border-radius:10px;font-size:13px;cursor:pointer}
-.photo-done-label{padding:0 16px 12px;font-size:12px;color:#34C759;font-weight:500}
+.photo-done-label{padding:0 16px 6px;font-size:12px;color:#34C759;font-weight:500}
+.photo-done-actions{padding:0 16px 12px}
+.btn-replace{width:100%;padding:9px;background:#f2f2f7;color:#FF9500;border:none;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer}
+.preview-resolution{font-size:11px;color:rgba(255,255,255,0.6);text-align:center;margin-top:4px}
 
 /* CAMERA */
 #cameraScreen{display:none;position:fixed;inset:0;z-index:200;background:#000;flex-direction:column}
@@ -140,6 +143,7 @@ canvas{display:none}
 <div id="previewScreen">
   <div class="preview-top">
     <div class="preview-filename" id="preview-filename"></div>
+    <div class="preview-resolution" id="preview-resolution"></div>
   </div>
   <img id="previewImg" src=""/>
   <div class="preview-bottom">
@@ -272,7 +276,10 @@ function showPhotos(qId){
         <span class="tag">${p.cadrage}</span>
       </div>
       ${isDone
-        ?`<div class="photo-done-label">✓ Envoyée dans Drive</div>`
+        ?`<div class="photo-done-label">✓ Envoyée dans Drive</div>
+        <div class="photo-done-actions">
+          <button class="btn-replace" onclick="replacePhoto('${p.id_photo}')">🔄 Remplacer</button>
+        </div>`
         :`<div class="photo-actions">
             <button class="btn-camera" onclick="openCamera('${p.id_photo}')">Prendre la photo</button>
             <button class="btn-skip" onclick="markDone('${p.id_photo}')">Déjà prise</button>
@@ -281,6 +288,12 @@ function showPhotos(qId){
   });
 }
 function markDone(id){done[id]=true;save();showPhotos();}
+function replacePhoto(id){
+  const p=PHOTOS.find(x=>x.id_photo===id);
+  if(!p)return;
+  // Rouvrir la caméra — l'upload écrasera le fichier Drive existant
+  openCamera(id);
+}
 
 // GOOGLE AUTH
 const REDIRECT_URI='https://francktami-bot.github.io/regisseur-sailoe';
@@ -347,6 +360,7 @@ function takePhoto(){
     const url=URL.createObjectURL(b);
     document.getElementById('previewImg').src=url;
     document.getElementById('preview-filename').textContent=currentPhoto.id_photo+'.jpg';
+    document.getElementById('preview-resolution').textContent=c.width+'×'+c.height+' px';
     closeCamera();
     document.getElementById('previewScreen').classList.add('active');
   },'image/jpeg',0.92);
