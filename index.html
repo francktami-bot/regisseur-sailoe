@@ -410,7 +410,9 @@ async function doUpload(){
     let resp;
     if(existingId){
       // UPDATE — écraser le fichier existant
+      const metadata={name:filename,mimeType:'image/jpeg'};
       const form=new FormData();
+      form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
       form.append('file',blob,filename);
       resp=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${existingId}?uploadType=multipart`,{
         method:'PATCH',
