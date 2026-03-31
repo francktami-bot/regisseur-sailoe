@@ -6,29 +6,22 @@
 <title>Régiesseur Photos — Sailoé / Lagoon 42</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1923; color: #e8f0f7; min-height: 100vh; }
-  
+  body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; background: #0f1923; color: #e8f0f7; min-height: 100vh; }
   header { background: #1a2d40; padding: 16px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
   header h1 { font-size: 18px; font-weight: 700; color: #7eb8e8; }
   header p { font-size: 12px; color: #8899aa; margin-top: 2px; }
-  
   .search-bar { padding: 12px 16px; background: #162330; border-bottom: 1px solid #1e3347; }
   .search-bar input { width: 100%; padding: 10px 14px; background: #1a2d40; border: 1px solid #2a4a6a; border-radius: 8px; color: #e8f0f7; font-size: 15px; outline: none; }
   .search-bar input::placeholder { color: #5577aa; }
-  
   .filter-bar { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; background: #162330; border-bottom: 1px solid #1e3347; }
   .filter-btn { white-space: nowrap; padding: 6px 12px; border-radius: 20px; border: 1px solid #2a4a6a; background: transparent; color: #7eb8e8; font-size: 12px; cursor: pointer; }
   .filter-btn.active { background: #2a6496; border-color: #3a84c6; color: #fff; }
-  
   .stats { padding: 10px 16px; background: #1a2d40; border-bottom: 1px solid #1e3347; font-size: 12px; color: #8899aa; }
   .stats span { color: #7eb8e8; font-weight: 600; }
-  
   .photo-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
-  
   .photo-card { background: #1a2d40; border-radius: 10px; padding: 14px; border-left: 4px solid #2a6496; }
   .photo-card.plan-large { border-left-color: #2e7d32; }
   .photo-card.close-up { border-left-color: #7b1fa2; }
-  
   .photo-id { font-size: 13px; font-weight: 700; color: #7eb8e8; font-family: monospace; }
   .photo-question { font-size: 11px; color: #5577aa; margin: 4px 0; }
   .photo-usage { font-size: 13px; color: #c8ddf0; margin: 6px 0 4px; font-weight: 600; }
@@ -38,33 +31,25 @@
   .badge-type { background: #1e3a5a; color: #7eb8e8; }
   .badge-cadrage { background: #2e1a3a; color: #ce93d8; }
   .badge-theme { background: #1a3a1a; color: #81c784; }
-  
   .empty { text-align: center; padding: 40px 20px; color: #5577aa; font-size: 14px; }
-  
   .section-header { padding: 8px 0 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #4a6a8a; letter-spacing: 1px; }
 </style>
 </head>
 <body>
-
 <header>
   <h1>📸 Régiesseur Photos — Sailoé</h1>
-  <p>Lagoon 42 · Guide tournage Hugo · <span id="count-header"></span></p>
+  <p id="header-sub">Lagoon 42 · Guide tournage Hugo</p>
 </header>
-
 <div class="search-bar">
-  <input type="text" id="search" placeholder="Rechercher une photo, description, ID…" oninput="filterPhotos()">
+  <input type="text" id="search" placeholder="Rechercher une photo, description, ID..." oninput="filterPhotos()">
 </div>
-
-<div class="filter-bar" id="filter-bar">
+<div class="filter-bar">
   <button class="filter-btn active" onclick="setFilter('all', this)">Tout</button>
   <button class="filter-btn" onclick="setFilter('Plan large', this)">Plan large</button>
   <button class="filter-btn" onclick="setFilter('Close-up', this)">Close-up</button>
 </div>
-
 <div class="stats" id="stats"></div>
-
 <div class="photo-list" id="photo-list"></div>
-
 <script>
 const PHOTOS = [
   {
@@ -178,80 +163,37 @@ const PHOTOS = [
     "cadrage": "Frontal serré"
   }
 ];
-
+document.getElementById('header-sub').textContent = 'Lagoon 42 · Guide tournage Hugo · ' + PHOTOS.length + ' photos';
 let currentFilter = 'all';
-
 function setFilter(f, btn) {
   currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
   filterPhotos();
 }
-
 function filterPhotos() {
-  const q = document.getElementById('search').value.toLowerCase();
-  let results = PHOTOS;
-  
-  if (currentFilter !== 'all') {
-    results = results.filter(p => p.type === currentFilter);
-  }
-  
-  if (q) {
-    results = results.filter(p =>
-      (p.id || '').toLowerCase().includes(q) ||
-      (p.description || '').toLowerCase().includes(q) ||
-      (p.usage || '').toLowerCase().includes(q) ||
-      (p.question || '').toLowerCase().includes(q) ||
-      (p.thematique || '').toLowerCase().includes(q)
-    );
-  }
-  
+  var q = document.getElementById('search').value.toLowerCase();
+  var results = PHOTOS.slice();
+  if (currentFilter !== 'all') { results = results.filter(function(p) { return p.type === currentFilter; }); }
+  if (q) { results = results.filter(function(p) { return (p.id||'').toLowerCase().indexOf(q)>=0||(p.description||'').toLowerCase().indexOf(q)>=0||(p.usage||'').toLowerCase().indexOf(q)>=0||(p.question||'').toLowerCase().indexOf(q)>=0||(p.thematique||'').toLowerCase().indexOf(q)>=0; }); }
   renderPhotos(results);
 }
-
 function renderPhotos(photos) {
-  const list = document.getElementById('photo-list');
-  const stats = document.getElementById('stats');
-  
-  stats.innerHTML = `<span>${photos.length}</span> photo${photos.length > 1 ? 's' : ''} affichée${photos.length > 1 ? 's' : ''} sur <span>${PHOTOS.length}</span>`;
-  
-  if (photos.length === 0) {
-    list.innerHTML = '<div class="empty">Aucune photo trouvée</div>';
-    return;
-  }
-  
-  // Group by thématique
-  const byTheme = {};
-  photos.forEach(p => {
-    if (!byTheme[p.thematique]) byTheme[p.thematique] = [];
-    byTheme[p.thematique].push(p);
-  });
-  
-  let html = '';
-  for (const [theme, themePhotos] of Object.entries(byTheme)) {
-    html += `<div class="section-header">${theme.replace(/_/g, ' ')}</div>`;
-    themePhotos.forEach(p => {
-      const cardClass = p.type === 'Plan large' ? 'plan-large' : p.type === 'Close-up' ? 'close-up' : '';
-      html += `
-        <div class="photo-card ${cardClass}">
-          <div class="photo-id">${p.id}</div>
-          <div class="photo-question">${p.question}</div>
-          <div class="photo-usage">${p.usage}</div>
-          <div class="photo-desc">${p.description}</div>
-          <div class="photo-meta">
-            <span class="badge badge-type">${p.type}</span>
-            <span class="badge badge-cadrage">${p.cadrage}</span>
-            <span class="badge badge-theme">${p.thematique.split('_')[0]}</span>
-          </div>
-        </div>`;
+  var list = document.getElementById('photo-list');
+  var stats = document.getElementById('stats');
+  stats.innerHTML = '<span>' + photos.length + '</span> photo' + (photos.length>1?'s':'') + ' affichée' + (photos.length>1?'s':'') + ' sur <span>' + PHOTOS.length + '</span>';
+  if (photos.length===0) { list.innerHTML='<div class="empty">Aucune photo trouvée</div>'; return; }
+  var byTheme = {};
+  photos.forEach(function(p) { if (!byTheme[p.thematique]) byTheme[p.thematique]=[]; byTheme[p.thematique].push(p); });
+  var html = '';
+  for (var theme in byTheme) {
+    html += '<div class="section-header">' + theme.replace(/_/g,' ') + '</div>';
+    byTheme[theme].forEach(function(p) {
+      var cc = p.type==='Plan large'?'plan-large':p.type==='Close-up'?'close-up':'';
+      html += '<div class="photo-card '+cc+'"><div class="photo-id">'+p.id+'</div><div class="photo-question">'+p.question+'</div><div class="photo-usage">'+p.usage+'</div><div class="photo-desc">'+p.description+'</div><div class="photo-meta"><span class="badge badge-type">'+p.type+'</span><span class="badge badge-cadrage">'+p.cadrage+'</span><span class="badge badge-theme">'+p.thematique.split('_')[0]+'</span></div></div>';
     });
   }
   list.innerHTML = html;
 }
-
-// Init
-document.getElementById('count-header').textContent = PHOTOS.length + ' photos';
 renderPhotos(PHOTOS);
-</script>
-</body>
-</html>
+</script></body></html>
