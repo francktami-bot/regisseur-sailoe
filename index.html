@@ -9,6 +9,7 @@
 <title>Scanner Tickets — Ocean Skills</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0f1923;--card:#1a2535;--bd:#2a3a50;--bl:#3b82f6;--gr:#10b981;--tx:#e2e8f0;--mu:#64748b}
@@ -83,7 +84,7 @@ canvas{display:none}
 
 <header>
   <span style="font-size:20px">🧾</span>
-  <div><h1>Scanner Tickets<span class="badge">v1.4</span></h1><p>Ocean Skills — Compta 2026</p></div>
+  <div><h1>Scanner Tickets<span class="badge">v1.5</span></h1><p>Ocean Skills — Compta 2026</p></div>
 </header>
 
 <canvas id="snapCv"></canvas>
@@ -129,7 +130,10 @@ canvas{display:none}
   </div>
   <div class="err" id="errCam"></div>
   <video id="vid" autoplay playsinline muted></video>
-  <button class="btn bl" id="btnStartCam" onclick="startCam()">📷 Activer la caméra</button>
+  <button class="btn bl" id="btnStartCam" onclick="startCam()">📷 Photo d\'un ticket papier</button>
+  <div style="display:flex;align-items:center;gap:10px;margin:6px 0 10px"><div style="flex:1;height:1px;background:var(--bd)"></div><span style="font-size:12px;color:var(--mu)">ou</span><div style="flex:1;height:1px;background:var(--bd)"></div></div>
+  <button class="btn gh" onclick="document.getElementById(\'pdfInput\').click()" style="border-color:#f59e0b50">📎 Importer une facture PDF</button>
+  <input type="file" id="pdfInput" accept="application/pdf,.pdf" style="display:none" onchange="handlePDF(this)">
   <div class="row" id="camActions" style="display:none">
     <button class="btn gh" onclick="stopCam()">✕ Annuler</button>
     <button class="btn gr" style="flex:2" onclick="doSnap()">📸 Capturer</button>
@@ -184,6 +188,57 @@ canvas{display:none}
     <div class="fn" id="pFn">—</div>
   </div>
   <div class="err" id="errGen"></div>
+</div>
+
+<!-- STEP PDF : Import facture -->
+<div class="panel" id="pPdf">
+  <div style="background:var(--card);border:1px solid #f59e0b50;border-radius:12px;padding:16px;margin-bottom:14px;text-align:center">
+    <div style="font-size:36px;margin-bottom:8px">📎</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px" id="pdfFileName">facture.pdf</div>
+    <div style="font-size:12px;color:var(--mu)" id="pdfFileSize">—</div>
+  </div>
+
+  <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🌍 Pays / devise</div>
+  <div class="locale-bar" id="localeBarPdf">
+    <button onclick="setLocale(\'FR\')" class="active" id="loc2_FR">🇫🇷 EUR €</button>
+    <button onclick="setLocale(\'US\')" id="loc2_US">🇺🇸 USD $</button>
+    <button onclick="setLocale(\'CA\')" id="loc2_CA">🇨🇦 CAD $</button>
+    <button onclick="setLocale(\'GB\')" id="loc2_GB">🇬🇧 GBP £</button>
+  </div>
+
+  <div class="ia-row">
+    <span>✨ Remplissage auto par IA</span>
+    <button class="ia-btn" id="iaBtnPdf" onclick="runPdfIA()">Analyser</button>
+  </div>
+  <div id="iaMsgPdf" style="font-size:12px;text-align:center;min-height:18px;margin-bottom:8px"></div>
+
+  <div class="fields">
+    <div class="field"><label>🏪 Établissement</label><input id="fE2" type="text" placeholder="Ex: Vimeo" oninput="updPathPdf()"></div>
+    <div class="field-row">
+      <div class="field"><label>📅 Date (JJ/MM/AAAA)</label><input id="fD2" type="text" placeholder="JJ/MM/AAAA" oninput="updPathPdf()"></div>
+      <div class="field" style="max-width:110px"><label>💱 Devise</label>
+        <select id="fCur2" onchange="updPathPdf()">
+          <option value="EUR">€ EUR</option>
+          <option value="USD">$ USD</option>
+          <option value="CAD">$ CAD</option>
+          <option value="GBP">£ GBP</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label id="totalLabelPdf">💶 Total TTC</label><input id="fT2" type="text" placeholder="1431.13" inputmode="decimal" oninput="updPathPdf()"></div>
+  </div>
+
+  <div class="pbox">
+    <div class="lb">📁 Destination Drive</div>
+    <div class="pt" id="pPthPdf">—</div>
+    <div class="fn" id="pFnPdf">—</div>
+  </div>
+  <div class="err" id="errPdf"></div>
+
+  <div style="display:flex;gap:10px;margin-top:6px">
+    <button class="btn gh" style="max-width:100px" onclick="goTo(0)">← Retour</button>
+    <button class="btn gr" style="flex:1" id="btnSendPdf" onclick="generatePdf()">📤 Renommer et envoyer</button>
+  </div>
 </div>
 
 <!-- STEP 1b : Aperçu recadrage -->
@@ -351,7 +406,7 @@ window.addEventListener('load',function(){
 });
 
 function goPanel(id){
-  ['pConfig','pDrive','p0','p1','p1b','p2'].forEach(function(p){
+  ['pConfig','pDrive','p0','p1','p1b','pPdf','p2'].forEach(function(p){
     var el=document.getElementById(p);
     if(el) el.className='panel'+(p===id?' on':'');
   });
@@ -820,6 +875,181 @@ function uploadToDrive(blob,filename,folderId){
     sb.className='sbox serr'; sb.textContent='❌ '+e.message;
     document.getElementById('successBlock').style.display='block';
   });
+}
+
+// ── PDF Import ─────────────────────────────────────────────
+var pdfFile=null, pdfText='';
+
+function handlePDF(input){
+  var f=input.files&&input.files[0];
+  if(!f) return;
+  pdfFile=f;
+  document.getElementById('pdfFileName').textContent=f.name;
+  document.getElementById('pdfFileSize').textContent=Math.round(f.size/1024)+' KB';
+  document.getElementById('fE2').value='';
+  document.getElementById('fD2').value='';
+  document.getElementById('fT2').value='';
+  document.getElementById('iaMsgPdf').textContent='';
+  document.getElementById('iaBtnPdf').disabled=false;
+  document.getElementById('iaBtnPdf').textContent='Analyser';
+  document.getElementById('errPdf').textContent='';
+  // Sync locale buttons
+  syncLocaleButtons();
+  updPathPdf();
+  goPanel('pPdf');
+  // Auto-extract text from PDF
+  extractPdfText(f);
+}
+
+function extractPdfText(file){
+  var reader=new FileReader();
+  reader.onload=function(){
+    var arr=new Uint8Array(reader.result);
+    if(typeof pdfjsLib==='undefined'){
+      pdfText=''; return;
+    }
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    pdfjsLib.getDocument({data:arr}).promise.then(function(doc){
+      var pages=[];
+      var total=doc.numPages;
+      function getPage(n){
+        if(n>total){
+          pdfText=pages.join('\n');
+          // Auto-run IA if we got text
+          if(pdfText.length>20) runPdfIA();
+          return;
+        }
+        doc.getPage(n).then(function(page){
+          page.getTextContent().then(function(tc){
+            pages.push(tc.items.map(function(i){return i.str;}).join(' '));
+            getPage(n+1);
+          });
+        });
+      }
+      getPage(1);
+    }).catch(function(){pdfText='';});
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function syncLocaleButtons(){
+  document.querySelectorAll('#localeBarPdf button').forEach(function(b){b.className='';});
+  var el=document.getElementById('loc2_'+locale);
+  if(el) el.className='active';
+  var cfg=LOCALES[locale];
+  document.getElementById('fCur2').value=cfg.cur;
+  document.getElementById('totalLabelPdf').textContent=cfg.curLabel;
+}
+
+function runPdfIA(){
+  var btn=document.getElementById('iaBtnPdf'),msg=document.getElementById('iaMsgPdf');
+  if(!pdfText||pdfText.length<10){
+    msg.style.color='#fbbf24'; msg.textContent='Texte PDF non extrait — remplis manuellement';
+    return;
+  }
+  btn.disabled=true; btn.textContent='⏳';
+  msg.style.color='#94a3b8'; msg.textContent='Analyse en cours…';
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':API_KEY,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:300,
+      messages:[{role:'user',content:'Voici le texte extrait d\'une facture PDF. Extrais les informations et renvoie UNIQUEMENT ce JSON (sans backticks):\n{"establishment":"NOM","date":"DD/MM/YYYY","total":"0.00","currency":"EUR"}\n\nRegles:\n- establishment: nom de la societe qui facture\n- date: date de facturation au format DD/MM/YYYY. Si la date source est en format US (MM/DD/YYYY), convertis-la.\n- total: montant TTC final, chiffres avec point decimal\n- currency: EUR, USD, CAD ou GBP\n\nTexte:\n'+pdfText.substring(0,3000)}]
+    })
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.error){msg.style.color='#fca5a5';msg.textContent='Erreur: '+d.error.message;btn.textContent='Reessayer';btn.disabled=false;return;}
+    var txt=((d.content||[]).find(function(b){return b.type==='text';})||{}).text||'';
+    try{
+      var m=txt.replace(/```[a-z]*/gi,'').replace(/```/g,'').match(/\{[\s\S]*\}/);
+      var p=JSON.parse(m?m[0]:txt);
+      if(p.establishment) document.getElementById('fE2').value=p.establishment;
+      if(p.date){
+        var parsed=parseDateDDMMYYYY(p.date);
+        if(parsed) document.getElementById('fD2').value=formatDateDisplay(parsed);
+        else document.getElementById('fD2').value=p.date;
+      }
+      if(p.total) document.getElementById('fT2').value=p.total;
+      if(p.currency){
+        var det=Object.keys(LOCALES).find(function(k){return LOCALES[k].cur===p.currency;});
+        if(det){ setLocale(det); syncLocaleButtons(); }
+        document.getElementById('fCur2').value=p.currency;
+      }
+      updPathPdf();
+      msg.style.color='#4ade80'; msg.textContent='Verifie et corrige si besoin';
+    }catch(e){
+      msg.style.color='#fbbf24'; msg.textContent='Remplis manuellement';
+    }
+    btn.textContent='Re-analyser'; btn.disabled=false;
+  })
+  .catch(function(){
+    msg.style.color='#fbbf24'; msg.textContent='Reseau indisponible';
+    btn.textContent='Reessayer'; btn.disabled=false;
+  });
+}
+
+function updPathPdf(){
+  var e=san(document.getElementById('fE2').value||'Facture');
+  var dateRaw=document.getElementById('fD2').value||todLocal();
+  var tRaw=document.getElementById('fT2').value||'0';
+  var cur=document.getElementById('fCur2').value||LOCALES[locale].cur;
+  var parsed=parseDate(dateRaw);
+  if(!parsed) parsed={day:1,month:new Date().getMonth()+1,year:new Date().getFullYear()};
+  var df=formatDateForFilename(parsed);
+  var tf=curLabel(tRaw,cur);
+  var mk=MONTHS[parsed.month]+' '+parsed.year;
+  var fn=e+'_'+df+'_'+tf+'.pdf';
+  document.getElementById('pPthPdf').textContent=mk+' > Achat';
+  document.getElementById('pFnPdf').textContent=fn;
+}
+
+function generatePdf(){
+  var errEl=document.getElementById('errPdf');
+  errEl.textContent='';
+  var eRaw=document.getElementById('fE2').value.trim();
+  var dRaw=document.getElementById('fD2').value.trim();
+  var tRaw=document.getElementById('fT2').value.trim();
+  var cur=document.getElementById('fCur2').value||LOCALES[locale].cur;
+
+  if(!eRaw){errEl.textContent='Etablissement manquant';return;}
+  if(!dRaw){errEl.textContent='Date manquante';return;}
+  if(!tRaw){errEl.textContent='Total manquant';return;}
+  if(!pdfFile){errEl.textContent='Fichier PDF manquant';return;}
+
+  var etab=san(eRaw);
+  var parsed=parseDate(dRaw);
+  if(!parsed){errEl.textContent='Format de date invalide';return;}
+  var df=formatDateForFilename(parsed);
+  var tf=curLabel(tRaw,cur);
+  var mk=MONTHS[parsed.month]+' '+parsed.year;
+  pdfName=etab+'_'+df+'_'+tf+'.pdf';
+  var fid=getFolderId(mk,parsed.year);
+  var folderId=fid||ROOT;
+  driveUrl='https://drive.google.com/drive/folders/'+folderId;
+
+  if(!fid){
+    if(!window.confirm('Dossiers Drive pour '+parsed.year+' non configures. Le PDF ira dans le dossier racine. Continuer ?')) return;
+  }
+
+  // Show upload screen
+  document.getElementById('resultImg').style.display='none';
+  document.getElementById('dFn').textContent=pdfName;
+  document.getElementById('dIco').textContent='⏳';
+  document.getElementById('dTitle').textContent='Envoi vers Drive…';
+  document.getElementById('statusBox').className='sbox sup';
+  document.getElementById('statusBox').textContent='⏳ Upload vers Google Drive…';
+  document.getElementById('successBlock').style.display='none';
+  goTo(2);
+
+  // Upload original PDF with new name
+  uploadToDrive(pdfFile, pdfName, folderId);
 }
 
 // ── Utils ──────────────────────────────────────────────────
