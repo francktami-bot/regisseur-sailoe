@@ -287,7 +287,7 @@ function showPhotos(qId){
     </div>`;
   });
 }
-function markDone(id){done[id]=true;save();showPhotos();}
+function markDone(id){done[id]=true;save();window._checkedState[id]=true;saveState(window._checkedState);showPhotos();}
 function replacePhoto(id){
   const p=PHOTOS.find(x=>x.id_photo===id);
   if(!p)return;
@@ -486,6 +486,7 @@ function animateBar(from,to,duration){
 }
 function uploadDone(){
   document.getElementById('uploadScreen').classList.remove('active');
+  if(currentPhoto){done[currentPhoto]=true;save();window._checkedState[currentPhoto]=true;saveState(window._checkedState);}
   blob=null;
   showPhotos();
 }
