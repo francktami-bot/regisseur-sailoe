@@ -494,5 +494,94 @@ function retryUpload(){doUpload();}
 checkAuth();
 showThemes();
 </script>
+
+
+
+<div id="tokenBanner" style="display:none;position:fixed;top:0;left:0;right:0;background:#1B3A5C;color:#fff;padding:14px;z-index:9999;font-size:14px;">
+  <div style="margin-bottom:8px;font-weight:bold;">🔑 Token GitHub requis pour sauvegarder l'état des photos</div>
+  <input id="tokenInput" type="password" placeholder="ghp_xxx..." style="width:100%;padding:8px;border-radius:6px;border:none;font-size:13px;margin-bottom:8px;">
+  <button onclick="saveToken()" style="background:#27AE60;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:14px;font-weight:bold;">Enregistrer</button>
+</div>
+
+<script>
+// ── PERSISTANCE ÉTAT PHOTOS ──────────────────────────────
+const GH_REPO = "francktami-bot/regisseur-sailoe";
+const GH_FILE = "state.json";
+const GH_API  = "https://api.github.com/repos/" + GH_REPO + "/contents/" + GH_FILE;
+window._ghSha = null;
+window._checkedState = {};
+
+function getToken() {
+  return localStorage.getItem('regisseur_gh_token') || '';
+}
+
+function saveToken() {
+  const t = document.getElementById('tokenInput').value.trim();
+  if (!t.startsWith('ghp_')) { alert('Token invalide — doit commencer par ghp_'); return; }
+  localStorage.setItem('regisseur_gh_token', t);
+  document.getElementById('tokenBanner').style.display = 'none';
+  initCheckedState();
+}
+
+async function loadState() {
+  const token = getToken();
+  if (!token) { document.getElementById('tokenBanner').style.display = 'block'; return {}; }
+  try {
+    const r = await fetch(GH_API, { headers: { Authorization: "token " + token } });
+    if (r.status === 404) return {};
+    if (!r.ok) { localStorage.removeItem('regisseur_gh_token'); document.getElementById('tokenBanner').style.display = 'block'; return {}; }
+    const j = await r.json();
+    window._ghSha = j.sha;
+    return JSON.parse(atob(j.content.replace(/\n/g,'')));
+  } catch(e) { return {}; }
+}
+
+async function saveState(checkedIds) {
+  const token = getToken();
+  if (!token) return;
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(checkedIds))));
+  const body = { message: "update state", content: content };
+  if (window._ghSha) body.sha = window._ghSha;
+  try {
+    const r = await fetch(GH_API, {
+      method: "PUT",
+      headers: { Authorization: "token " + token, "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const j = await r.json();
+    if (j.content) window._ghSha = j.content.sha;
+  } catch(e) { console.error("saveState error", e); }
+}
+
+async function initCheckedState() {
+  const state = await loadState();
+  window._checkedState = state || {};
+  Object.keys(window._checkedState).forEach(id => {
+    if (window._checkedState[id]) {
+      const cb = document.querySelector('input[data-id="' + id + '"]');
+      if (cb) { cb.checked = true; cb.closest('li').classList.add('done'); }
+    }
+  });
+  if (typeof updateCounters === 'function') updateCounters();
+}
+
+async function togglePhoto(cb) {
+  const id = cb.dataset.id;
+  const li = cb.closest('li');
+  if (cb.checked) {
+    li.classList.add('done');
+    window._checkedState[id] = true;
+  } else {
+    li.classList.remove('done');
+    delete window._checkedState[id];
+  }
+  if (typeof updateCounters === 'function') updateCounters();
+  await saveState(window._checkedState);
+}
+
+window.addEventListener('load', initCheckedState);
+// ── FIN PERSISTANCE ──────────────────────────────────────
+</script>
+
 </body>
 </html>
