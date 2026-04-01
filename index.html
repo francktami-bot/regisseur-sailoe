@@ -83,7 +83,7 @@ canvas{display:none}
 
 <header>
   <span style="font-size:20px">🧾</span>
-  <div><h1>Scanner Tickets<span class="badge">v1.3</span></h1><p>Ocean Skills — Compta 2026</p></div>
+  <div><h1>Scanner Tickets<span class="badge">v1.4</span></h1><p>Ocean Skills — Compta 2026</p></div>
 </header>
 
 <canvas id="snapCv"></canvas>
@@ -186,6 +186,27 @@ canvas{display:none}
   <div class="err" id="errGen"></div>
 </div>
 
+<!-- STEP 1b : Aperçu recadrage -->
+<div class="panel" id="p1b">
+  <div style="text-align:center;margin-bottom:10px">
+    <div style="font-size:15px;font-weight:700;margin-bottom:4px">Aperçu du recadrage</div>
+    <p style="font-size:12px;color:var(--mu)">Vérifie que seul le ticket est visible</p>
+  </div>
+  <div style="background:#000;border-radius:12px;overflow:hidden;margin-bottom:12px;border:2px solid var(--gr)">
+    <canvas id="previewCv" style="display:block;width:100%"></canvas>
+  </div>
+  <div class="pbox">
+    <div class="lb">📁 Destination Drive</div>
+    <div class="pt" id="pPth2">—</div>
+    <div class="fn" id="pFn2">—</div>
+  </div>
+  <div class="err" id="errGen2"></div>
+  <div style="display:flex;gap:10px;margin-top:10px">
+    <button class="btn gh" style="max-width:120px" onclick="goTo(1)">← Corriger</button>
+    <button class="btn gr" style="flex:1" id="btnSend" onclick="generate()">📄 Envoyer vers Drive</button>
+  </div>
+</div>
+
 <!-- STEP 2 : Résultat -->
 <div class="panel" id="p2">
   <div class="dbox">
@@ -206,7 +227,7 @@ canvas{display:none}
 <!-- Barre fixe step 1 -->
 <div class="bar" id="b1" style="display:none">
   <button class="btn gh" style="max-width:90px" onclick="goTo(0);stopCam()">← Retour</button>
-  <button class="btn gr" style="flex:1" id="btnGen" onclick="generate()">📄 Générer et envoyer</button>
+  <button class="btn bl" style="flex:1" id="btnPreview" onclick="showCropPreview()">👁 Aperçu du recadrage</button>
 </div>
 
 <script>
@@ -330,11 +351,11 @@ window.addEventListener('load',function(){
 });
 
 function goPanel(id){
-  ['pConfig','pDrive','p0','p1','p2'].forEach(function(p){
+  ['pConfig','pDrive','p0','p1','p1b','p2'].forEach(function(p){
     var el=document.getElementById(p);
     if(el) el.className='panel'+(p===id?' on':'');
   });
-  document.getElementById('b1').style.display=id==='p1'?'flex':'none';
+  document.getElementById('b1').style.display=(id==='p1')?'flex':'none';
   window.scrollTo(0,0);
 }
 function goTo(n){ goPanel('p'+n); }
@@ -422,19 +443,17 @@ function initCrop(){
     iw=imgEl.width; ih=imgEl.height;
     c.width=iw; c.height=ih;
 
-    // FIX v1.2: always maintain exact aspect ratio
+    // FIX v1.4: maintain EXACT aspect ratio — never distort
     var wrapW=wrap.clientWidth||340;
     var ratio=ih/iw;
     var displayW=wrapW;
     var displayH=Math.round(wrapW*ratio);
-    // Cap height at 50% viewport but adjust width to keep ratio
-    var maxH=Math.round(window.innerHeight*0.50);
+    // If too tall, shrink both dimensions proportionally
+    var maxH=Math.round(window.innerHeight*0.55);
     if(displayH>maxH){
       displayH=maxH;
       displayW=Math.round(maxH/ratio);
     }
-    cvDisplayW=displayW;
-    cvDisplayH=displayH;
     c.style.width=displayW+'px';
     c.style.height=displayH+'px';
     // Center canvas if narrower than wrapper
@@ -482,8 +501,8 @@ function redraw(){
 function getPt(e){
   var c=document.getElementById('cropCv');
   var r=c.getBoundingClientRect();
-  // FIX v1.2: use stored display dimensions for consistent scaling
-  var sx=iw/cvDisplayW, sy=ih/cvDisplayH;
+  // FIX v1.4: always use live bounding rect for accurate mapping
+  var sx=iw/r.width, sy=ih/r.height;
   var s=e.touches?e.touches[0]:e;
   return{x:(s.clientX-r.left)*sx, y:(s.clientY-r.top)*sy};
 }
@@ -657,6 +676,39 @@ function updPath(){
 
   document.getElementById('pPth').textContent=mk+' › Achat';
   document.getElementById('pFn').textContent=fn;
+}
+
+// ── Aperçu recadrage ───────────────────────────────────────
+function showCropPreview(){
+  var errEl=document.getElementById('errGen');
+  errEl.textContent='';
+  var eRaw=document.getElementById('fE').value.trim();
+  var dRaw=document.getElementById('fD').value.trim();
+  var tRaw=document.getElementById('fT').value.trim();
+  if(!eRaw){errEl.textContent='Établissement manquant';return;}
+  if(!dRaw){errEl.textContent='Date manquante';return;}
+  if(!tRaw){errEl.textContent='Total manquant';return;}
+  if(!imgEl){errEl.textContent='Image non disponible';return;}
+
+  // Draw cropped preview
+  var bx=Math.round(box.x*iw), by=Math.round(box.y*ih);
+  var bw=Math.round(box.w*iw), bh=Math.round(box.h*ih);
+  if(bx<0) bx=0; if(by<0) by=0;
+  if(bx+bw>iw) bw=iw-bx; if(by+bh>ih) bh=ih-by;
+  if(bw<10||bh<10){errEl.textContent='Zone trop petite';return;}
+
+  var pc=document.getElementById('previewCv');
+  pc.width=bw; pc.height=bh;
+  var pctx=pc.getContext('2d');
+  pctx.fillStyle='#fff'; pctx.fillRect(0,0,bw,bh);
+  pctx.drawImage(imgEl,bx,by,bw,bh,0,0,bw,bh);
+
+  // Copy path info
+  document.getElementById('pPth2').textContent=document.getElementById('pPth').textContent;
+  document.getElementById('pFn2').textContent=document.getElementById('pFn').textContent;
+  document.getElementById('errGen2').textContent='';
+
+  goPanel('p1b');
 }
 
 // ── Générer + Upload ───────────────────────────────────────
