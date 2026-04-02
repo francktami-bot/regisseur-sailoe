@@ -554,6 +554,25 @@ async function saveState(checkedIds) {
   } catch(e) { console.error("saveState error", e); }
 }
 
+
+function updateCounters() {
+  const byTheme = {};
+  PHOTOS.forEach(p => {
+    if(!byTheme[p.thematique]) byTheme[p.thematique]={total:0,done:0};
+    byTheme[p.thematique].total++;
+    if(window._checkedState && window._checkedState[p.id_photo]) byTheme[p.thematique].done++;
+  });
+  document.querySelectorAll('.theme-badge').forEach(b => {
+    const card = b.closest('[data-theme]') || b.parentElement;
+    const label = card ? card.textContent : '';
+    for(const [t,c] of Object.entries(byTheme)) {
+      if(label.includes(t.replace(/_/g,' ').toUpperCase()) || label.includes(t)) {
+        b.textContent = c.done+'/'+c.total; break;
+      }
+    }
+  });
+}
+
 async function initCheckedState() {
   const state = await loadState();
   window._checkedState = state || {};
@@ -563,7 +582,7 @@ async function initCheckedState() {
       if (cb) { cb.checked = true; cb.closest('li').classList.add('done'); }
     }
   });
-  if (typeof updateCounters === 'function') updateCounters();
+  updateCounters();
 }
 
 async function togglePhoto(cb) {
@@ -576,7 +595,7 @@ async function togglePhoto(cb) {
     li.classList.remove('done');
     delete window._checkedState[id];
   }
-  if (typeof updateCounters === 'function') updateCounters();
+  updateCounters();
   await saveState(window._checkedState);
 }
 
