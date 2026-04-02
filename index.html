@@ -2,1064 +2,587 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>Scanner Tickets — Ocean Skills</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Régiesseur Photo — Sailoé v4</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0f1923;--card:#1a2535;--bd:#2a3a50;--bl:#3b82f6;--gr:#10b981;--tx:#e2e8f0;--mu:#64748b}
-body{background:var(--bg);color:var(--tx);font-family:-apple-system,sans-serif;padding-bottom:90px}
-header{background:var(--card);border-bottom:1px solid var(--bd);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
-header h1{font-size:16px;font-weight:700}
-header p{font-size:11px;color:var(--mu)}
-.badge{background:var(--bl);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:8px}
-.wrap{padding:14px;max-width:500px;margin:0 auto}
-.panel{display:none}.panel.on{display:block}
-.btn{width:100%;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;margin-bottom:10px}
-.btn:active{opacity:.8}
-.bl{background:var(--bl);color:#fff}
-.gr{background:var(--gr);color:#fff}
-.gh{background:#1e2d3d;color:var(--tx);border:1px solid var(--bd)}
-.row{display:flex;gap:10px}.row .btn{margin-bottom:0}
-.ucard{background:var(--card);border:2px dashed var(--bd);border-radius:14px;padding:28px 16px;text-align:center;margin-bottom:14px}
-.ucard .ico{font-size:44px;margin-bottom:10px}
-.ucard h2{font-size:17px;font-weight:700;margin-bottom:6px}
-.ucard p{font-size:13px;color:var(--mu);line-height:1.5}
-video{width:100%;border-radius:12px;background:#000;display:none;margin-bottom:10px}
-#cropWrap{background:#000;border-radius:12px;overflow:hidden;margin-bottom:10px;touch-action:none;position:relative}
-#cropCv{display:block;touch-action:none}
-.tog{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;margin-bottom:10px}
-.tog span{font-size:14px;flex:1}
-.sw{position:relative;width:44px;height:26px;flex-shrink:0}
-.sw input{opacity:0;position:absolute;width:0;height:0}
-.track{position:absolute;inset:0;background:var(--bd);border-radius:13px;cursor:pointer;transition:.3s}
-.track::before{content:'';position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
-input:checked+.track{background:var(--bl)}
-input:checked+.track::before{transform:translateX(18px)}
-.ia-row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;margin-bottom:6px}
-.ia-row span{font-size:13px;color:var(--mu);flex:1}
-.ia-btn{background:var(--bl);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
-.ia-btn:disabled{opacity:.5}
-#iaMsg{font-size:12px;text-align:center;min-height:18px;margin-bottom:8px}
-.fields{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
-.field label{display:block;font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.field input,.field select{width:100%;background:var(--card);border:1.5px solid var(--bd);border-radius:10px;padding:12px;font-size:16px;color:var(--tx);font-family:inherit;-webkit-appearance:none}
-.field input:focus,.field select:focus{outline:none;border-color:var(--bl)}
-.field-row{display:flex;gap:10px}
-.field-row .field{flex:1}
-.pbox{background:#0c1f12;border:1px solid #1c4a2c;border-radius:10px;padding:12px 14px;margin-bottom:10px}
-.pbox .lb{font-size:11px;color:#4ade80;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.pbox .pt{font-size:14px;font-weight:600;color:#86efac}
-.pbox .fn{font-size:11px;color:var(--mu);margin-top:3px;font-family:monospace;word-break:break-all}
-.err{color:#fca5a5;font-size:13px;text-align:center;min-height:16px;margin-bottom:6px}
-.bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:2px solid var(--bd);padding:10px 14px;padding-bottom:max(10px,env(safe-area-inset-bottom));display:flex;gap:10px;z-index:999}
-.bar .btn{margin-bottom:0}
-.dbox{background:var(--card);border-radius:14px;padding:24px 16px;text-align:center}
-.dbox .ico{font-size:44px;margin-bottom:10px}
-.dbox h2{font-size:20px;font-weight:700;margin-bottom:6px}
-.fnbadge{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;font-family:monospace;color:var(--gr);word-break:break-all;margin:10px 0;text-align:left}
-.sbox{border-radius:10px;padding:14px;margin:10px 0;font-size:14px;font-weight:600;text-align:center}
-.sup{background:#1e3a5f;border:1px solid #3b82f6;color:#93c5fd}
-.sok{background:#0c1f12;border:1px solid #10b981;color:#4ade80}
-.serr{background:#2a1515;border:1px solid #ef4444;color:#fca5a5}
-#resultImg{width:100%;border-radius:10px;border:2px solid var(--bl);display:none;margin:10px 0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:#f2f2f7;min-height:100vh}
+.screen{display:none;padding-bottom:40px}
+.screen.active{display:block}
+.topbar{background:#fff;border-bottom:0.5px solid #c6c6c8;padding:12px 16px;position:sticky;top:0;z-index:50}
+.topbar-title{font-size:17px;font-weight:600;color:#000}
+.topbar-sub{font-size:13px;color:#6e6e73;margin-top:2px}
+.back-btn{background:none;border:none;color:#007AFF;font-size:17px;cursor:pointer;padding:0}
+.section-title{font-size:13px;font-weight:500;color:#6e6e73;text-transform:uppercase;letter-spacing:0.05em;padding:20px 16px 6px}
+.theme-card{background:#fff;border-radius:12px;margin:0 16px 10px;padding:14px 16px;cursor:pointer}
+.theme-card:active{opacity:0.7}
+.theme-row{display:flex;justify-content:space-between;align-items:center}
+.theme-name{font-size:15px;font-weight:500;color:#000}
+.theme-badge{font-size:12px;padding:3px 9px;border-radius:99px;background:#e8f4ff;color:#007AFF;font-weight:500}
+.theme-badge.done{background:#e8f8ee;color:#34C759}
+.progress-track{height:3px;background:#e5e5ea;border-radius:2px;margin-top:10px}
+.progress-bar{height:100%;background:#007AFF;border-radius:2px}
+.q-card{background:#fff;border-radius:12px;margin:0 16px 10px;padding:14px 16px;cursor:pointer}
+.q-card:active{opacity:0.7}
+.q-text{font-size:14px;color:#000;line-height:1.45}
+.q-meta{display:flex;gap:6px;margin-top:8px;align-items:center}
+.badge{font-size:11px;padding:2px 8px;border-radius:99px;background:#f2f2f7;color:#6e6e73}
+.badge.diag{background:#fff0ee;color:#c0392b}
+.badge.step{background:#e8f4ff;color:#007AFF}
+.badge.info{background:#e8f8ee;color:#34C759}
+.q-progress{font-size:11px;color:#6e6e73;margin-left:auto}
+.photo-card{background:#fff;border-radius:12px;margin:0 16px 12px;overflow:hidden}
+.photo-card.done{border:1.5px solid #34C759}
+.photo-header{padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.photo-id{font-family:'SF Mono',monospace;font-size:12px;font-weight:600;padding:4px 9px;background:#e8f4ff;color:#007AFF;border-radius:6px;white-space:nowrap;margin-top:1px}
+.photo-id.done{background:#e8f8ee;color:#34C759}
+.photo-info{flex:1}
+.photo-usage{font-size:14px;font-weight:500;color:#000}
+.photo-desc{font-size:12px;color:#6e6e73;margin-top:3px;line-height:1.4}
+.photo-tags{display:flex;gap:6px;padding:8px 16px 12px;border-top:0.5px solid #c6c6c8}
+.tag{font-size:11px;padding:3px 10px;border-radius:99px;background:#fff3e0;color:#e65100}
+.photo-actions{padding:0 16px 14px;display:flex;gap:8px}
+.btn-camera{flex:1;padding:11px;background:#007AFF;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer}
+.btn-skip{padding:11px 14px;background:#f2f2f7;color:#6e6e73;border:none;border-radius:10px;font-size:13px;cursor:pointer}
+.photo-done-label{padding:0 16px 6px;font-size:12px;color:#34C759;font-weight:500}
+.photo-done-actions{padding:0 16px 12px}
+.btn-replace{width:100%;padding:9px;background:#f2f2f7;color:#FF9500;border:none;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer}
+.preview-resolution{font-size:11px;color:rgba(255,255,255,0.6);text-align:center;margin-top:4px}
+
+/* CAMERA */
+#cameraScreen{display:none;position:fixed;inset:0;z-index:200;background:#000;flex-direction:column}
+#cameraScreen.active{display:flex}
+#video{width:100%;flex:1;object-fit:cover;min-height:0}
+.cam-overlay{position:fixed;top:0;left:0;right:0;padding:50px 16px 14px;background:linear-gradient(to bottom,rgba(0,0,0,0.8),transparent);z-index:5}
+.cam-id{font-family:'SF Mono',monospace;font-size:14px;color:#64b5f6;font-weight:600}
+.cam-desc{font-size:13px;color:rgba(255,255,255,0.85);margin-top:4px;line-height:1.4}
+.cam-type{display:inline-block;margin-top:6px;font-size:11px;padding:3px 9px;background:rgba(255,149,0,0.3);color:#ffcc80;border-radius:99px}
+.cam-bottom{position:fixed;bottom:0;left:0;right:0;padding:20px 32px 100px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.85);z-index:10}
+.shutter{width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:rgba(255,255,255,0.9);cursor:pointer;flex-shrink:0}
+.shutter:active{transform:scale(0.92)}
+.cam-cancel{color:#fff;background:none;border:none;font-size:16px;cursor:pointer;min-width:60px}
+.cam-flip{color:#fff;background:none;border:none;font-size:26px;cursor:pointer;min-width:60px;text-align:right}
+
+/* PREVIEW */
+#previewScreen{display:none;position:fixed;inset:0;z-index:300;background:#000;flex-direction:column}
+#previewScreen.active{display:flex}
+#previewImg{width:100%;flex:1;object-fit:contain;min-height:0}
+.preview-top{padding:50px 16px 10px;text-align:center;background:rgba(0,0,0,0.7);position:fixed;top:0;left:0;right:0}
+.preview-filename{font-family:'SF Mono',monospace;font-size:13px;color:#64b5f6}
+.preview-bottom{position:fixed;bottom:0;left:0;right:0;padding:16px 20px 80px;display:flex;gap:12px;background:#111}
+.btn-retake{flex:1;padding:13px;border:1px solid rgba(255,255,255,0.3);background:none;color:#fff;border-radius:12px;font-size:14px;cursor:pointer}
+.btn-save{flex:2;padding:13px;background:#007AFF;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer}
+.btn-save:active{opacity:0.8}
+
+/* UPLOAD STATUS */
+#uploadScreen{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:32px}
+#uploadScreen.active{display:flex}
+.upload-icon{font-size:48px}
+.upload-title{color:#fff;font-size:18px;font-weight:600;text-align:center}
+.upload-sub{color:rgba(255,255,255,0.6);font-size:14px;text-align:center;line-height:1.5}
+.upload-filename{font-family:'SF Mono',monospace;font-size:13px;color:#64b5f6;text-align:center}
+.upload-progress{width:100%;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden}
+.upload-bar{height:100%;background:#007AFF;border-radius:2px;transition:width 0.3s;width:0%}
+.btn-upload-ok{padding:14px 32px;background:#34C759;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;display:none}
+.btn-upload-retry{padding:14px 32px;background:#FF3B30;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;display:none}
+
+/* AUTH */
+#authScreen{display:none;position:fixed;inset:0;z-index:500;background:#f2f2f7;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:32px}
+#authScreen.active{display:flex}
+.auth-title{font-size:22px;font-weight:700;color:#000;text-align:center}
+.auth-sub{font-size:14px;color:#6e6e73;text-align:center;line-height:1.5}
+.btn-auth{padding:16px 32px;background:#007AFF;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;width:100%;max-width:300px}
+
 canvas{display:none}
-.drive-banner{background:var(--card);border:2px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
-.drive-banner .info{flex:1}
-.drive-banner .info b{display:block;font-size:14px;font-weight:700}
-.drive-banner .info span{font-size:12px;color:var(--mu)}
-.drive-banner button{background:var(--bl);color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
-.locale-bar{display:flex;gap:6px;margin-bottom:10px}
-.locale-bar button{flex:1;padding:10px 6px;border-radius:10px;border:1.5px solid var(--bd);background:var(--card);color:var(--mu);font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:.15s}
-.locale-bar button.active{border-color:var(--bl);background:#1e3050;color:#fff}
-.locale-bar button:active{opacity:.8}
 </style>
 </head>
 <body>
 
-<header>
-  <span style="font-size:20px">🧾</span>
-  <div><h1>Scanner Tickets<span class="badge">v1.5</span></h1><p>Ocean Skills — Compta 2026</p></div>
-</header>
+<div id="screen-themes" class="screen active">
+  <div class="topbar">
+    <div class="topbar-title">Régiesseur photo v4</div>
+    <div class="topbar-sub" id="auth-status">Sailoé — Lagoon 42</div>
+  </div>
+  <div class="section-title">Thématiques</div>
+  <div id="themes-list"></div>
+</div>
 
-<canvas id="snapCv"></canvas>
+<div id="screen-questions" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showThemes()">&#8249; Thématiques</button>
+    <div class="topbar-sub" id="q-sub"></div>
+  </div>
+  <div class="section-title">Questions</div>
+  <div id="questions-list"></div>
+</div>
 
-<div class="wrap">
+<div id="screen-photos" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showQuestions()">&#8249; Questions</button>
+    <div class="topbar-title" id="p-title"></div>
+    <div class="topbar-sub" id="p-sub"></div>
+  </div>
+  <div id="photos-list"></div>
+</div>
 
-<!-- STEP CONFIG -->
-<div class="panel" id="pConfig">
-  <div style="background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;margin-bottom:14px">
-    <div style="font-size:17px;font-weight:700;margin-bottom:8px">🔑 Clé API Anthropic</div>
-    <p style="font-size:13px;color:var(--mu);margin-bottom:14px;line-height:1.5">Nécessaire pour l'analyse automatique. Sauvegardée uniquement sur cet appareil.</p>
-    <input id="apiKeyInput" type="password" placeholder="sk-ant-api03-..."
-      style="width:100%;background:var(--bg);border:1.5px solid var(--bd);border-radius:10px;padding:12px;font-size:14px;color:var(--tx);font-family:monospace;margin-bottom:10px">
-    <p style="font-size:12px;color:#fbbf24;margin-bottom:12px">⚠️ Usage personnel uniquement.</p>
-    <button class="btn gr" onclick="saveApiKey()">💾 Enregistrer et continuer</button>
+<div id="cameraScreen">
+  <div class="cam-overlay">
+    <div class="cam-id" id="cam-id"></div>
+    <div class="cam-desc" id="cam-desc"></div>
+    <span class="cam-type" id="cam-type"></span>
+  </div>
+  <video id="video" autoplay playsinline muted></video>
+  <div class="cam-bottom">
+    <button class="cam-cancel" onclick="closeCamera()">Annuler</button>
+    <button class="shutter" onclick="takePhoto()"></button>
+    <button class="cam-flip" onclick="flipCamera()">&#8635;</button>
   </div>
 </div>
 
-<!-- STEP DRIVE -->
-<div class="panel" id="pDrive">
-  <div style="text-align:center;padding:30px 0 20px">
-    <div style="font-size:56px;margin-bottom:14px">📁</div>
-    <div style="font-size:20px;font-weight:700;margin-bottom:8px">Connexion Google Drive</div>
-    <p style="font-size:14px;color:var(--mu);line-height:1.6;margin-bottom:24px">Autorise l'accès à Drive pour que les PDFs soient déposés automatiquement dans le bon dossier compta.</p>
+<div id="previewScreen">
+  <div class="preview-top">
+    <div class="preview-filename" id="preview-filename"></div>
+    <div class="preview-resolution" id="preview-resolution"></div>
   </div>
-  <button class="btn gr" id="btnDriveConnect" onclick="connectGoogle()">🔗 Autoriser Google Drive</button>
-</div>
-
-<!-- STEP 0 : Caméra -->
-<div class="panel on" id="p0">
-  <div class="drive-banner" id="driveBanner">
-    <span style="font-size:22px">📁</span>
-    <div class="info">
-      <b>Google Drive</b>
-      <span id="driveMsg">Non connecté</span>
-    </div>
-    <button id="driveBtnConnect" onclick="connectGoogle()">🔗 Connecter</button>
-  </div>
-  <div class="ucard">
-    <div class="ico">📷</div>
-    <h2>Photo du ticket</h2>
-    <p>Pose le ticket sur une surface sombre et cadre-le entièrement</p>
-  </div>
-  <div class="err" id="errCam"></div>
-  <video id="vid" autoplay playsinline muted></video>
-  <button class="btn bl" id="btnStartCam" onclick="startCam()">📷 Photo d\'un ticket papier</button>
-  <div style="display:flex;align-items:center;gap:10px;margin:6px 0 10px"><div style="flex:1;height:1px;background:var(--bd)"></div><span style="font-size:12px;color:var(--mu)">ou</span><div style="flex:1;height:1px;background:var(--bd)"></div></div>
-  <button class="btn gh" onclick="document.getElementById(\'pdfInput\').click()" style="border-color:#f59e0b50">📎 Importer une facture PDF</button>
-  <input type="file" id="pdfInput" accept="application/pdf,.pdf" style="display:none" onchange="handlePDF(this)">
-  <div class="row" id="camActions" style="display:none">
-    <button class="btn gh" onclick="stopCam()">✕ Annuler</button>
-    <button class="btn gr" style="flex:2" onclick="doSnap()">📸 Capturer</button>
+  <img id="previewImg" src=""/>
+  <div class="preview-bottom">
+    <button class="btn-retake" onclick="retake()">Reprendre</button>
+    <button class="btn-save" onclick="uploadToDrive()">Envoyer vers Drive</button>
   </div>
 </div>
 
-<!-- STEP 1 : Recadrage + champs -->
-<div class="panel" id="p1">
-  <p style="font-size:12px;color:var(--mu);text-align:center;margin-bottom:8px">✏️ Ajuste les coins du cadre bleu</p>
-  <div id="cropWrap">
-    <canvas id="cropCv"></canvas>
-  </div>
-  <div class="tog">
-    <span>🖤 Fond noir hors ticket</span>
-    <label class="sw"><input type="checkbox" id="bgTog" checked onchange="redraw()"><span class="track"></span></label>
-  </div>
+<div id="uploadScreen">
+  <div class="upload-icon" id="upload-icon">☁️</div>
+  <div class="upload-title" id="upload-title">Envoi en cours...</div>
+  <div class="upload-filename" id="upload-filename"></div>
+  <div class="upload-progress"><div class="upload-bar" id="upload-bar"></div></div>
+  <div class="upload-sub" id="upload-sub">Connexion à Google Drive</div>
+  <button class="btn-upload-ok" id="btn-ok" onclick="uploadDone()">Parfait ✓</button>
+  <button class="btn-upload-retry" id="btn-retry" onclick="retryUpload()">Réessayer</button>
+</div>
 
-  <!-- Locale selector -->
-  <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🌍 Pays / devise du ticket</div>
-  <div class="locale-bar" id="localeBar">
-    <button onclick="setLocale('FR')" id="loc_FR" class="active">🇫🇷 France<br><span style="font-size:11px;color:var(--mu)">EUR €</span></button>
-    <button onclick="setLocale('US')" id="loc_US">🇺🇸 USA<br><span style="font-size:11px;color:var(--mu)">USD $</span></button>
-    <button onclick="setLocale('CA')" id="loc_CA">🇨🇦 Canada<br><span style="font-size:11px;color:var(--mu)">CAD $</span></button>
-    <button onclick="setLocale('GB')" id="loc_GB">🇬🇧 UK<br><span style="font-size:11px;color:var(--mu)">GBP £</span></button>
-  </div>
+<div id="authScreen">
+  <div class="auth-title">Connexion Google Drive</div>
+  <div class="auth-sub">Pour envoyer les photos directement dans les bons dossiers Drive, connecte ton compte Google.</div>
+  <button class="btn-auth" onclick="signIn()">Se connecter avec Google</button>
+</div>
 
-  <div class="ia-row">
-    <span>✨ Remplissage auto par IA</span>
-    <button class="ia-btn" id="iaBtn" onclick="runIA()">Analyser</button>
-  </div>
-  <div id="iaMsg"></div>
+<canvas id="canvas"></canvas>
 
-  <div class="fields">
-    <div class="field"><label>🏪 Établissement</label><input id="fE" type="text" placeholder="Ex: Le Cargo" oninput="updPath()"></div>
-    <div class="field-row">
-      <div class="field"><label>📅 Date</label><input id="fD" type="text" placeholder="JJ/MM/AAAA" oninput="updPath()"></div>
-      <div class="field" style="max-width:110px"><label>💱 Devise</label>
-        <select id="fCur" onchange="updPath()">
-          <option value="EUR">€ EUR</option>
-          <option value="USD">$ USD</option>
-          <option value="CAD">$ CAD</option>
-          <option value="GBP">£ GBP</option>
-        </select>
+<script>
+const CLIENT_ID = '75307320621-k7dav48gmda852ij5nievpcr3ullvfik.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+const DRIVE_FOLDERS = {
+  'T0_Check_In_Out':       '1dNjjmG47xPg11BBDZOCbVVl2izl-NJj_',
+  'T2_Energie':            '1qx1gyyNh_x_HwjHGIJK1CNhjjtqZuthE',
+  'T3_Moteurs':            '1TNcuQfLs40wt2bSquE_-l8tiXo3wuLfP',
+  'T4_Annexe_Moteur':      '112cD1ovJJiS7xtdpash2FRbKT9Ne16tN',
+  'T5_Annexe_Mise_a_Leau': '1CrKmK9VBdXd-f2trbwsIro4Sc4Tl4Kz9',
+  'T6_Eau_Douce':          '1LPSnRXDL2euaJrnfHSKWV-3Z76WqA4FL',
+  'T7_Instruments':        '1PtPu1JCPdgvNU1LAvFm9myI7OqVDDB19',
+  'T8_Mouillage':          '1qIiXY5y7K-kHbPpeXVK3ufiyAO2QWtR1',
+  'T9_Securite':           '1QagjuJO8tdJGzu-PDyLPGcFeTqKsMs72',
+  'T10_Divers':            '1AS5YhK1RqlwcWJlP9jafOlnNpmD2_wH0',
+};
+
+const PHOTOS = [{"id_photo": "L42-T1-Q1-P1", "id_question": "L42-T1-Q1", "thematique": "T1_WC_DOUCHE MARIN", "question": "Comment utiliser correctement les toilettes / WC marin ?", "type_question": "Step by step", "usage": "Situation initiale — WC marin", "description": "Vue d'ensemble des toilettes avec bouton noir et boutons haut/bas visibles", "type_photo": "Plan large", "cadrage": "Vue ensemble"}, {"id_photo": "L42-T1-Q1-C1", "id_question": "L42-T1-Q1", "thematique": "T1_WC_DOUCHE MARIN", "question": "Comment utiliser correctement les toilettes / WC marin ?", "type_question": "Step by step", "usage": "Étapes 1 et 3 — bouton noir", "description": "Bouton noir à côté des WC — main en action", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T1-Q1-C2", "id_question": "L42-T1-Q1", "thematique": "T1_WC_DOUCHE MARIN", "question": "Comment utiliser correctement les toilettes / WC marin ?", "type_question": "Step by step", "usage": "Étape 4 — bouton du haut", "description": "Bouton du haut — main appuyant 3 secondes", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T1-Q1-C3", "id_question": "L42-T1-Q1", "thematique": "T1_WC_DOUCHE MARIN", "question": "Comment utiliser correctement les toilettes / WC marin ?", "type_question": "Step by step", "usage": "Étape 5 — bouton du bas", "description": "Bouton du bas — vider la cuvette et le circuit", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T1-Q1-C4", "id_question": "L42-T1-Q1", "thematique": "T1_WC_DOUCHE MARIN", "question": "Comment utiliser correctement les toilettes / WC marin ?", "type_question": "Step by step", "usage": "Étape 6 — sac plastique et poubelle dédiée", "description": "Petit sac plastique positionné sous l'évier ou poubelle dédiée pour les déchets papier", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T1-Q2-P1", "id_question": "L42-T1-Q2", "thematique": "T1_WC_DOUCHE MARIN", "question": "J'ai l'impression que les WC sont bouchés — que faire ?", "type_question": "Diagnostic", "usage": "Situation initiale — cabine arrière", "description": "Vue cabine arrière avec panneau étanche visible dans la douche", "type_photo": "Plan large", "cadrage": "Vue ensemble"}, {"id_photo": "L42-T1-Q2-C1", "id_question": "L42-T1-Q2", "thematique": "T1_WC_DOUCHE MARIN", "question": "J'ai l'impression que les WC sont bouchés — que faire ?", "type_question": "Diagnostic", "usage": "Étape 1 — panneau étanche ouvert", "description": "Panneau étanche ouvert donnant accès à la vanne d'évacuation rouge", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T1-Q2-C2", "id_question": "L42-T1-Q2", "thematique": "T1_WC_DOUCHE MARIN", "question": "J'ai l'impression que les WC sont bouchés — que faire ?", "type_question": "Diagnostic", "usage": "Étape 1 — vanne d'évacuation rouge", "description": "Vanne d'évacuation rouge en position ouverte", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q2-P1", "id_question": "L42-T2-Q2", "thematique": "T2_ENERGIE_A_BORD", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Situation initiale — localisation convertisseur", "description": "Tableau électrique avec convertisseur Inverter visible en dessous", "type_photo": "Plan large", "cadrage": "Vue ensemble"}, {"id_photo": "L42-T2-Q2-C1", "id_question": "L42-T2-Q2", "thematique": "T2_ENERGIE_A_BORD", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 1 — bouton convertisseur lumière rouge", "description": "Bouton du convertisseur avec lumière rouge allumée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q2-C2", "id_question": "L42-T2-Q2", "thematique": "T2_ENERGIE_A_BORD", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 3 — disjoncteur 220 coursive", "description": "Disjoncteur 220 dans la coursive — position réenclenchée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q2-C3", "id_question": "L42-T2-Q2", "thematique": "T2_ENERGIE_A_BORD", "question": "Comment mettre en route le convertisseur pour avoir du 220V et que faire s'il ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Résultat — écran 220V confirmé", "description": "Écran 220 du tableau électrique — aiguille sur 220V", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C1", "id_question": "L42-T2-Q3", "thematique": "T2_ENERGIE_A_BORD", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 1 — bouton groupe 3 fridge unit", "description": "Bouton groupe 3 fridge unit sur le tableau de bord — lumière rouge allumée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C2", "id_question": "L42-T2-Q3", "thematique": "T2_ENERGIE_A_BORD", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 2 — molette frigo sur 7", "description": "Molette de puissance à l'intérieur du frigo en position 7", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C3", "id_question": "L42-T2-Q3", "thematique": "T2_ENERGIE_A_BORD", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 3 — molette congélateur au max", "description": "Molette de puissance à l'intérieur du congélateur en position max", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q3-C4", "id_question": "L42-T2-Q3", "thematique": "T2_ENERGIE_A_BORD", "question": "Le frigo ou congélateur ne fonctionne plus — que faire ?", "type_question": "Diagnostic", "usage": "Étape 4 — bouton frigo extérieur", "description": "Bouton frigo extérieur sur le bateau — position allumée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T5-Q8-P1", "id_question": "L42-T5-Q8", "thematique": "T5_ANNEXE_MISE_A_LEAU", "question": "Pourquoi le winch électrique ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Situation initiale — panneau disjoncteurs", "description": "Panneau complet avec disjoncteurs thermiques coursive avant tribord", "type_photo": "Plan large", "cadrage": "Vue ensemble"}, {"id_photo": "L42-T5-Q8-C1", "id_question": "L42-T5-Q8", "thematique": "T5_ANNEXE_MISE_A_LEAU", "question": "Pourquoi le winch électrique ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 1 — disjoncteur winch", "description": "Disjoncteur winch en position sautée puis réenclenchée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T5-Q8-C2", "id_question": "L42-T5-Q8", "thematique": "T5_ANNEXE_MISE_A_LEAU", "question": "Pourquoi le winch électrique ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 2 — coupe-circuits domestiques", "description": "Coupe-circuits domestiques phase et neutre en position ON et ON", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T5-Q8-C3", "id_question": "L42-T5-Q8", "thematique": "T5_ANNEXE_MISE_A_LEAU", "question": "Pourquoi le winch électrique ne fonctionne pas ?", "type_question": "Diagnostic", "usage": "Étape 3 — manivelle mode manuel", "description": "Manivelle insérée dans le winch — mode manuel", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T7-Q10-P1", "id_question": "L42-T7-Q10", "thematique": "T7_INSTRUMENTS_ELECTRONIQUES", "question": "La prise USB de la table à cartes ne fonctionne pas — que faire ?", "type_question": "Diagnostic", "usage": "Situation initiale — table à cartes", "description": "Table à cartes avec prise USB et radio visibles ensemble", "type_photo": "Plan large", "cadrage": "Vue ensemble"}, {"id_photo": "L42-T7-Q10-C1", "id_question": "L42-T7-Q10", "thematique": "T7_INSTRUMENTS_ELECTRONIQUES", "question": "La prise USB de la table à cartes ne fonctionne pas — que faire ?", "type_question": "Diagnostic", "usage": "Étape 1 — bouton ON de la radio", "description": "Bouton ON de la radio — close-up frontal", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T7-Q10-C2", "id_question": "L42-T7-Q10", "thematique": "T7_INSTRUMENTS_ELECTRONIQUES", "question": "La prise USB de la table à cartes ne fonctionne pas — que faire ?", "type_question": "Diagnostic", "usage": "Résolu — prise USB active", "description": "Prise USB de la table à cartes avec téléphone branché", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q1-P1", "id_question": "L42-T2-Q1", "thematique": "T2_ENERGIE_A_BORD", "question": "L'alarme de tension batterie s'est déclenchée — que faire ?", "type_question": "Diagnostic", "usage": "Situation initiale — tableau de bord", "description": "Vue d'ensemble du tableau de bord avec indicateurs batterie visibles", "type_photo": "Plan large", "cadrage": "Vue ensemble"}, {"id_photo": "L42-T2-Q1-C1", "id_question": "L42-T2-Q1", "thematique": "T2_ENERGIE_A_BORD", "question": "L'alarme de tension batterie s'est déclenchée — que faire ?", "type_question": "Diagnostic", "usage": "Étape 1 — indicateurs tension batterie", "description": "Indicateurs batterie bord, auxiliaire, moteur", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q1-C2", "id_question": "L42-T2-Q1", "thematique": "T2_ENERGIE_A_BORD", "question": "L'alarme de tension batterie s'est déclenchée — que faire ?", "type_question": "Diagnostic", "usage": "Étape 2 — boutons démarrage moteurs", "description": "Boutons démarrage moteurs bâbord et tribord", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q1-C3", "id_question": "L42-T2-Q1", "thematique": "T2_ENERGIE_A_BORD", "question": "L'alarme de tension batterie s'est déclenchée — que faire ?", "type_question": "Diagnostic", "usage": "Étape 3 — manettes débrayées régime 1400-1500", "description": "Manettes débrayées et régime 1400-1500 tours visible à l'écran", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q4-P1", "id_question": "L42-T2-Q4", "thematique": "T2_ENERGIE_A_BORD", "question": "Il n'y a plus d'eau chaude à bord — que faire ?", "type_question": "Diagnostic", "usage": "Situation initiale", "description": "Vue générale cockpit bâbord avec panneau de commande moteur visible", "type_photo": "Plan large", "cadrage": "Frontal"}, {"id_photo": "L42-T2-Q4-C1", "id_question": "L42-T2-Q4", "thematique": "T2_ENERGIE_A_BORD", "question": "Il n'y a plus d'eau chaude à bord — que faire ?", "type_question": "Diagnostic", "usage": "Étape 2 — avant", "description": "Manette des gaz bâbord en position ralenti — état avant action", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q4-C2", "id_question": "L42-T2-Q4", "thematique": "T2_ENERGIE_A_BORD", "question": "Il n'y a plus d'eau chaude à bord — que faire ?", "type_question": "Diagnostic", "usage": "Étape 2 — après", "description": "Manette des gaz bâbord poussée à mi-course — 1 400-1 500 tr/min", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q4-C3", "id_question": "L42-T2-Q4", "thematique": "T2_ENERGIE_A_BORD", "question": "Il n'y a plus d'eau chaude à bord — que faire ?", "type_question": "Diagnostic", "usage": "Étape 3 — confirmation", "description": "Afficheur régime moteur bâbord stabilisé entre 1 400 et 1 500 tr/min", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q5-P1", "id_question": "L42-T2-Q5", "thematique": "T2_ENERGIE_A_BORD", "question": "Comment lire et surveiller l'état de charge des batteries ?", "type_question": "Information", "usage": "Point 1 — contexte", "description": "Vue générale du tableau de bord avec les 3 parcs batteries visibles (Bord, Moteur, Auxiliaire)", "type_photo": "Plan large", "cadrage": "Frontal"}, {"id_photo": "L42-T2-Q5-P2", "id_question": "L42-T2-Q5", "thematique": "T2_ENERGIE_A_BORD", "question": "Comment lire et surveiller l'état de charge des batteries ?", "type_question": "Information", "usage": "Point 5 — action", "description": "Vue cockpit avec les moteurs en marche", "type_photo": "Plan moyen", "cadrage": "Frontal"}, {"id_photo": "L42-T2-Q8-P1", "id_question": "L42-T2-Q8", "thematique": "T2_ENERGIE_A_BORD", "question": "Comment mettre en route le convertisseur pour avoir du 220V en autonomie ?", "type_question": "Step by step", "usage": "Situation initiale", "description": "Vue générale de la zone où se trouve le bouton convertisseur sur le bateau", "type_photo": "Plan large", "cadrage": "Frontal"}, {"id_photo": "L42-T2-Q8-C1", "id_question": "L42-T2-Q8", "thematique": "T2_ENERGIE_A_BORD", "question": "Comment mettre en route le convertisseur pour avoir du 220V en autonomie ?", "type_question": "Step by step", "usage": "Étape 1 — avant", "description": "Bouton convertisseur avant action — lumière rouge éteinte", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q8-C2", "id_question": "L42-T2-Q8", "thematique": "T2_ENERGIE_A_BORD", "question": "Comment mettre en route le convertisseur pour avoir du 220V en autonomie ?", "type_question": "Step by step", "usage": "Étape 1 — après", "description": "Bouton convertisseur après action — lumière rouge allumée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q8-C3", "id_question": "L42-T2-Q8", "thematique": "T2_ENERGIE_A_BORD", "question": "Comment mettre en route le convertisseur pour avoir du 220V en autonomie ?", "type_question": "Step by step", "usage": "Étape 3 — prises", "description": "Prise avec autocollant 'convertisseur' visible à la table à cartes", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q11-P1", "id_question": "L42-T2-Q11", "thematique": "T2_ENERGIE_A_BORD", "question": "Quels équipements sont les plus énergivores à bord ?", "type_question": "Information", "usage": "Point 1 — contexte", "description": "Frigo extérieur", "type_photo": "Plan large", "cadrage": "Frontal"}, {"id_photo": "L42-T2-Q11-P2", "id_question": "L42-T2-Q11", "thematique": "T2_ENERGIE_A_BORD", "question": "Quels équipements sont les plus énergivores à bord ?", "type_question": "Information", "usage": "Point 2 — détail", "description": "Molette du frigo sur 7", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q11-P3", "id_question": "L42-T2-Q11", "thematique": "T2_ENERGIE_A_BORD", "question": "Quels équipements sont les plus énergivores à bord ?", "type_question": "Information", "usage": "Point 4 — détail", "description": "Prise USB table à cartes", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q11-P4", "id_question": "L42-T2-Q11", "thematique": "T2_ENERGIE_A_BORD", "question": "Quels équipements sont les plus énergivores à bord ?", "type_question": "Information", "usage": "Point 5 — détail", "description": "Bouton 'elect. navigation' sur le tableau de bord", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q12-P1", "id_question": "L42-T2-Q12", "thematique": "T2_ENERGIE_A_BORD", "question": "Quelle routine adopter pour garantir de l'énergie au quotidien ?", "type_question": "Information", "usage": "Point 1 — action", "description": "Manettes moteur embrayées à 1 400-1 500 tr/min", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T2-Q12-P2", "id_question": "L42-T2-Q12", "thematique": "T2_ENERGIE_A_BORD", "question": "Quelle routine adopter pour garantir de l'énergie au quotidien ?", "type_question": "Information", "usage": "Point 2 — contexte", "description": "Photo PC : bateau au mouillage", "type_photo": "Plan large", "cadrage": "—"}, {"id_photo": "L42-T2-Q12-P3", "id_question": "L42-T2-Q12", "thematique": "T2_ENERGIE_A_BORD", "question": "Quelle routine adopter pour garantir de l'énergie au quotidien ?", "type_question": "Information", "usage": "Point 3 — contexte", "description": "Photo PC : bateau naviguant au moteur", "type_photo": "Plan large", "cadrage": "—"}, {"id_photo": "L42-T2-Q12-P4", "id_question": "L42-T2-Q12", "thematique": "T2_ENERGIE_A_BORD", "question": "Quelle routine adopter pour garantir de l'énergie au quotidien ?", "type_question": "Information", "usage": "Point 4 — détail", "description": "Tableau électrique : voltmètre batterie entre 12,6 et 13V", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q1-P1", "id_question": "L42-T3-Q1", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment démarrer les moteurs du bateau convenablement ?", "type_question": "Step by step", "usage": "Situation initiale", "description": "Vue générale cockpit — tableau de commande des deux moteurs et manettes au point mort", "type_photo": "Plan large", "cadrage": "Frontal"}, {"id_photo": "L42-T3-Q1-C1", "id_question": "L42-T3-Q1", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment démarrer les moteurs du bateau convenablement ?", "type_question": "Step by step", "usage": "Étape 2 — power tribord", "description": "Close-up main sur bouton power tribord — bouton rouge allumé (lumière subtile)", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q1-C2", "id_question": "L42-T3-Q1", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment démarrer les moteurs du bateau convenablement ?", "type_question": "Step by step", "usage": "Étape 3 — start tribord", "description": "Close-up bouton start moteur tribord", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q1-C3", "id_question": "L42-T3-Q1", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment démarrer les moteurs du bateau convenablement ?", "type_question": "Step by step", "usage": "Étape 4 — échappement tribord", "description": "Échappement tribord — eau qui crache", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q1-C4", "id_question": "L42-T3-Q1", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment démarrer les moteurs du bateau convenablement ?", "type_question": "Step by step", "usage": "Étape 5 — power bâbord", "description": "Close-up main sur bouton power bâbord — bouton rouge allumé (lumière subtile)", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q1-C5", "id_question": "L42-T3-Q1", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment démarrer les moteurs du bateau convenablement ?", "type_question": "Step by step", "usage": "Étape 6 — échappement bâbord", "description": "Échappement bâbord — eau qui crache", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q2-P1", "id_question": "L42-T3-Q2", "thematique": "T3_MOTEURS_BATEAU", "question": "Un moteur démarre difficilement ou ne démarre pas — que faire ?", "type_question": "Diagnostic", "usage": "Situation initiale", "description": "Vue générale cockpit avec tableau de commande des deux moteurs visible", "type_photo": "Plan large", "cadrage": "Frontal"}, {"id_photo": "L42-T3-Q2-C1", "id_question": "L42-T3-Q2", "thematique": "T3_MOTEURS_BATEAU", "question": "Un moteur démarre difficilement ou ne démarre pas — que faire ?", "type_question": "Diagnostic", "usage": "Étape 1 — démarrage moteur opposé", "description": "Bouton power allumé rouge — démarrage moteur opposé", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q2-C2", "id_question": "L42-T3-Q2", "thematique": "T3_MOTEURS_BATEAU", "question": "Un moteur démarre difficilement ou ne démarre pas — que faire ?", "type_question": "Diagnostic", "usage": "Étape 2 — cale moteur bâbord", "description": "Vue générale cale moteur bâbord avec coupleur visible", "type_photo": "Plan moyen", "cadrage": "Frontal"}, {"id_photo": "L42-T3-Q2-C3", "id_question": "L42-T3-Q2", "thematique": "T3_MOTEURS_BATEAU", "question": "Un moteur démarre difficilement ou ne démarre pas — que faire ?", "type_question": "Diagnostic", "usage": "Étape 3 — coupleur OFF", "description": "Coupleur en position OFF avant action", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q2-C4", "id_question": "L42-T3-Q2", "thematique": "T3_MOTEURS_BATEAU", "question": "Un moteur démarre difficilement ou ne démarre pas — que faire ?", "type_question": "Diagnostic", "usage": "Étape 3 — coupleur activé", "description": "Coupleur activé en position couplée", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q2-C5", "id_question": "L42-T3-Q2", "thematique": "T3_MOTEURS_BATEAU", "question": "Un moteur démarre difficilement ou ne démarre pas — que faire ?", "type_question": "Diagnostic", "usage": "Étape 4 — démarrage moteur défaillant", "description": "Tentative de démarrage du moteur défaillant", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q2-C6", "id_question": "L42-T3-Q2", "thematique": "T3_MOTEURS_BATEAU", "question": "Un moteur démarre difficilement ou ne démarre pas — que faire ?", "type_question": "Diagnostic", "usage": "Étape 5 — coupleur OFF", "description": "Coupleur remis en position OFF immédiatement après démarrage", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q2-C7", "id_question": "L42-T3-Q2", "thematique": "T3_MOTEURS_BATEAU", "question": "Un moteur démarre difficilement ou ne démarre pas — que faire ?", "type_question": "Diagnostic", "usage": "Étape 6 — manettes recharge", "description": "Manettes en position 1 400-1 500 tr/min pour recharge batteries", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q2-C8", "id_question": "L42-T3-Q2", "thematique": "T3_MOTEURS_BATEAU", "question": "Un moteur démarre difficilement ou ne démarre pas — que faire ?", "type_question": "Diagnostic", "usage": "Étape 7 — voltmètre", "description": "Tableau électrique — voltmètre affichant un niveau au-delà de 12,6V", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q3-P1", "id_question": "L42-T3-Q3", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment arrêter les moteurs correctement ?", "type_question": "Step by step", "usage": "Situation initiale", "description": "Vue générale cockpit avec tableau de commande des deux moteurs", "type_photo": "Plan large", "cadrage": "Frontal"}, {"id_photo": "L42-T3-Q3-C1", "id_question": "L42-T3-Q3", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment arrêter les moteurs correctement ?", "type_question": "Step by step", "usage": "Étape 1 — stop bâbord", "description": "Doigt maintenant le bouton stop bâbord enfoncé", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q3-C2", "id_question": "L42-T3-Q3", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment arrêter les moteurs correctement ?", "type_question": "Step by step", "usage": "Étape 2 — stop tribord", "description": "Doigt maintenant le bouton stop tribord enfoncé", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q3-C3", "id_question": "L42-T3-Q3", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment arrêter les moteurs correctement ?", "type_question": "Step by step", "usage": "Étape 3 — power bâbord", "description": "Doigt maintenant le bouton power bâbord enfoncé jusqu à extinction", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q3-C4", "id_question": "L42-T3-Q3", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment arrêter les moteurs correctement ?", "type_question": "Step by step", "usage": "Étape 4 — power tribord", "description": "Doigt maintenant le bouton power tribord enfoncé jusqu à extinction", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q3-C5", "id_question": "L42-T3-Q3", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment arrêter les moteurs correctement ?", "type_question": "Step by step", "usage": "Étape 5 — contrôle final", "description": "Vue générale des deux cales moteurs — ventilateurs à l arrêt silence", "type_photo": "Plan large", "cadrage": "Frontal"}, {"id_photo": "L42-T3-Q5-P1", "id_question": "L42-T3-Q5", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment et pourquoi utiliser les coupe-circuits des batteries ?", "type_question": "Information", "usage": "Point 1 — cale bâbord", "description": "Vue générale cale moteur bâbord avec coupe-circuit visible en position ON", "type_photo": "Plan moyen", "cadrage": "Frontal"}, {"id_photo": "L42-T3-Q5-P2", "id_question": "L42-T3-Q5", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment et pourquoi utiliser les coupe-circuits des batteries ?", "type_question": "Information", "usage": "Point 2 — parc bâbord OFF", "description": "Coupe-circuits plus et neutre bâbord basculés sur OFF", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q5-P3", "id_question": "L42-T3-Q5", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment et pourquoi utiliser les coupe-circuits des batteries ?", "type_question": "Information", "usage": "Point 1 — cale tribord", "description": "Vue générale cale moteur tribord ouverte avec les coupe-circuits visibles", "type_photo": "Plan moyen", "cadrage": "Frontal"}, {"id_photo": "L42-T3-Q5-P4", "id_question": "L42-T3-Q5", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment et pourquoi utiliser les coupe-circuits des batteries ?", "type_question": "Information", "usage": "Point 2 — moteur tribord OFF", "description": "Coupe-circuit moteur tribord sur OFF — neutre noir en position ON", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q5-P5", "id_question": "L42-T3-Q5", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment et pourquoi utiliser les coupe-circuits des batteries ?", "type_question": "Information", "usage": "Point 2 — bord OFF", "description": "Coupe-circuit bord sur OFF — neutre en position ON", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q5-P6", "id_question": "L42-T3-Q5", "thematique": "T3_MOTEURS_BATEAU", "question": "Comment et pourquoi utiliser les coupe-circuits des batteries ?", "type_question": "Information", "usage": "Point 2 — tout tribord OFF", "description": "Les trois coupe-circuits tribord (moteur, bord, neutre) tous sur OFF", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q6-P1", "id_question": "L42-T3-Q6", "thematique": "T3_MOTEURS_BATEAU", "question": "Procédure en cas de batterie moteur déchargée", "type_question": "Step by step", "usage": "Situation initiale", "description": "Vue de loin de la cale moteur bâbord — localisation du coupleur sur le bateau", "type_photo": "Plan large", "cadrage": "Plan large"}, {"id_photo": "L42-T3-Q6-C1", "id_question": "L42-T3-Q6", "thematique": "T3_MOTEURS_BATEAU", "question": "Procédure en cas de batterie moteur déchargée", "type_question": "Step by step", "usage": "Étape 1", "description": "Coupleur en position OFF avant toute manipulation", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q6-C2", "id_question": "L42-T3-Q6", "thematique": "T3_MOTEURS_BATEAU", "question": "Procédure en cas de batterie moteur déchargée", "type_question": "Step by step", "usage": "Étape 2", "description": "Démarrage du moteur dont la batterie fonctionne encore", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q6-C3", "id_question": "L42-T3-Q6", "thematique": "T3_MOTEURS_BATEAU", "question": "Procédure en cas de batterie moteur déchargée", "type_question": "Step by step", "usage": "Étape 3", "description": "Coupleur enclenché en position ON", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q6-C4", "id_question": "L42-T3-Q6", "thematique": "T3_MOTEURS_BATEAU", "question": "Procédure en cas de batterie moteur déchargée", "type_question": "Step by step", "usage": "Étape 4", "description": "Démarrage du moteur dont la batterie était à plat", "type_photo": "Close-up", "cadrage": "Frontal serré"}, {"id_photo": "L42-T3-Q6-C5", "id_question": "L42-T3-Q6", "thematique": "T3_MOTEURS_BATEAU", "question": "Procédure en cas de batterie moteur déchargée", "type_question": "Step by step", "usage": "Étape 5", "description": "Coupleur remis immédiatement en position OFF après démarrage", "type_photo": "Close-up", "cadrage": "Frontal serré"}];
+
+let done={},currentTheme=null,currentQ=null,currentPhoto=null,stream=null,blob=null,accessToken=null;
+let usingFront=false;
+try{done=JSON.parse(localStorage.getItem('sp_done')||'{}')}catch(e){}
+function save(){try{localStorage.setItem('sp_done',JSON.stringify(done))}catch(e){}}
+try{accessToken=localStorage.getItem('sp_token')||null}catch(e){}
+
+function themes(){
+  const m={};
+  PHOTOS.forEach(p=>{
+    if(!m[p.thematique])m[p.thematique]={total:0,done:0};
+    m[p.thematique].total++;
+    if(done[p.id_photo])m[p.thematique].done++;
+  });
+  return m;
+}
+function questions(t){
+  const m={};
+  PHOTOS.filter(p=>p.thematique===t).forEach(p=>{
+    if(!m[p.id_question])m[p.id_question]={q:p.question,type:p.type_question,photos:[]};
+    m[p.id_question].photos.push(p);
+  });
+  return m;
+}
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function showThemes(){
+  show('screen-themes');
+  const el=document.getElementById('themes-list');
+  el.innerHTML='';
+  Object.entries(themes()).forEach(([t,d])=>{
+    const pct=d.total?Math.round(d.done/d.total*100):0;
+    const isDone=d.done===d.total&&d.total>0;
+    el.innerHTML+=`<div class="theme-card" onclick="showQuestions('${t}')">
+      <div class="theme-row">
+        <span class="theme-name">${t.replace(/_/g,' ')}</span>
+        <span class="theme-badge${isDone?' done':''}">${d.done}/${d.total}</span>
       </div>
-    </div>
-    <div class="field"><label id="totalLabel">💶 Total TTC</label><input id="fT" type="text" placeholder="171.70" inputmode="decimal" oninput="updPath()"></div>
-  </div>
-
-  <div class="pbox">
-    <div class="lb">📁 Destination Drive</div>
-    <div class="pt" id="pPth">—</div>
-    <div class="fn" id="pFn">—</div>
-  </div>
-  <div class="err" id="errGen"></div>
-</div>
-
-<!-- STEP PDF : Import facture -->
-<div class="panel" id="pPdf">
-  <div style="background:var(--card);border:1px solid #f59e0b50;border-radius:12px;padding:16px;margin-bottom:14px;text-align:center">
-    <div style="font-size:36px;margin-bottom:8px">📎</div>
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px" id="pdfFileName">facture.pdf</div>
-    <div style="font-size:12px;color:var(--mu)" id="pdfFileSize">—</div>
-  </div>
-
-  <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🌍 Pays / devise</div>
-  <div class="locale-bar" id="localeBarPdf">
-    <button onclick="setLocale(\'FR\')" class="active" id="loc2_FR">🇫🇷 EUR €</button>
-    <button onclick="setLocale(\'US\')" id="loc2_US">🇺🇸 USD $</button>
-    <button onclick="setLocale(\'CA\')" id="loc2_CA">🇨🇦 CAD $</button>
-    <button onclick="setLocale(\'GB\')" id="loc2_GB">🇬🇧 GBP £</button>
-  </div>
-
-  <div class="ia-row">
-    <span>✨ Remplissage auto par IA</span>
-    <button class="ia-btn" id="iaBtnPdf" onclick="runPdfIA()">Analyser</button>
-  </div>
-  <div id="iaMsgPdf" style="font-size:12px;text-align:center;min-height:18px;margin-bottom:8px"></div>
-
-  <div class="fields">
-    <div class="field"><label>🏪 Établissement</label><input id="fE2" type="text" placeholder="Ex: Vimeo" oninput="updPathPdf()"></div>
-    <div class="field-row">
-      <div class="field"><label>📅 Date (JJ/MM/AAAA)</label><input id="fD2" type="text" placeholder="JJ/MM/AAAA" oninput="updPathPdf()"></div>
-      <div class="field" style="max-width:110px"><label>💱 Devise</label>
-        <select id="fCur2" onchange="updPathPdf()">
-          <option value="EUR">€ EUR</option>
-          <option value="USD">$ USD</option>
-          <option value="CAD">$ CAD</option>
-          <option value="GBP">£ GBP</option>
-        </select>
+      <div class="progress-track"><div class="progress-bar" style="width:${pct}%"></div></div>
+    </div>`;
+  });
+  document.getElementById('auth-status').textContent = accessToken ? '✓ Google Drive connecté' : 'Sailoé — Lagoon 42';
+}
+function showQuestions(t){
+  if(t)currentTheme=t;
+  show('screen-questions');
+  document.getElementById('q-sub').textContent=currentTheme.replace(/_/g,' ');
+  const el=document.getElementById('questions-list');
+  el.innerHTML='';
+  Object.entries(questions(currentTheme)).forEach(([qId,d])=>{
+    const nd=d.photos.filter(p=>done[p.id_photo]).length;
+    const tc=d.type==='Diagnostic'?'diag':d.type==='Step by step'?'step':'info';
+    el.innerHTML+=`<div class="q-card" onclick="showPhotos('${qId}')">
+      <div class="q-text">${d.q}</div>
+      <div class="q-meta">
+        <span class="badge ${tc}">${d.type}</span>
+        <span class="q-progress">${nd}/${d.photos.length} photos</span>
       </div>
-    </div>
-    <div class="field"><label id="totalLabelPdf">💶 Total TTC</label><input id="fT2" type="text" placeholder="1431.13" inputmode="decimal" oninput="updPathPdf()"></div>
-  </div>
+    </div>`;
+  });
+}
+function showPhotos(qId){
+  if(qId)currentQ=qId;
+  show('screen-photos');
+  const qs=questions(currentTheme);
+  const d=qs[currentQ];
+  document.getElementById('p-title').textContent=currentQ;
+  document.getElementById('p-sub').textContent=d.photos.length+' photos à prendre';
+  const el=document.getElementById('photos-list');
+  el.innerHTML='';
+  d.photos.forEach(p=>{
+    const isDone=!!done[p.id_photo];
+    el.innerHTML+=`<div class="photo-card${isDone?' done':''}" id="pc-${p.id_photo}">
+      <div class="photo-header">
+        <span class="photo-id${isDone?' done':''}">${p.id_photo}</span>
+        <div class="photo-info">
+          <div class="photo-usage">${p.usage}</div>
+          <div class="photo-desc">${p.description}</div>
+        </div>
+      </div>
+      <div class="photo-tags">
+        <span class="tag">${p.type_photo}</span>
+        <span class="tag">${p.cadrage}</span>
+      </div>
+      ${isDone
+        ?`<div class="photo-done-label">✓ Envoyée dans Drive</div>
+        <div class="photo-done-actions">
+          <button class="btn-replace" onclick="replacePhoto('${p.id_photo}')">🔄 Remplacer</button>
+        </div>`
+        :`<div class="photo-actions">
+            <button class="btn-camera" onclick="openCamera('${p.id_photo}')">Prendre la photo</button>
+            <button class="btn-skip" onclick="markDone('${p.id_photo}')">Déjà prise</button>
+          </div>`}
+    </div>`;
+  });
+}
+function markDone(id){done[id]=true;save();window._checkedState[id]=true;saveState(window._checkedState);showPhotos();}
+function replacePhoto(id){
+  const p=PHOTOS.find(x=>x.id_photo===id);
+  if(!p)return;
+  // Rouvrir la caméra — l'upload écrasera le fichier Drive existant
+  openCamera(id);
+}
 
-  <div class="pbox">
-    <div class="lb">📁 Destination Drive</div>
-    <div class="pt" id="pPthPdf">—</div>
-    <div class="fn" id="pFnPdf">—</div>
-  </div>
-  <div class="err" id="errPdf"></div>
+// GOOGLE AUTH
+const REDIRECT_URI='https://francktami-bot.github.io/regisseur-sailoe';
+function signIn(){
+  const params=new URLSearchParams({
+    client_id:CLIENT_ID,
+    redirect_uri:REDIRECT_URI,
+    response_type:'token',
+    scope:SCOPES,
+    prompt:'consent'
+  });
+  window.location.href='https://accounts.google.com/o/oauth2/v2/auth?'+params;
+}
+function checkAuth(){
+  const hash=new URLSearchParams(window.location.hash.slice(1));
+  if(hash.get('access_token')){
+    accessToken=hash.get('access_token');
+    try{localStorage.setItem('sp_token',accessToken)}catch(e){}
+    window.history.replaceState(null,'',window.location.pathname);
+  }
+}
+function ensureAuth(cb){
+  if(accessToken){cb();return;}
+  document.getElementById('authScreen').classList.add('active');
+  window._pendingCb=cb;
+}
 
-  <div style="display:flex;gap:10px;margin-top:6px">
-    <button class="btn gh" style="max-width:100px" onclick="goTo(0)">← Retour</button>
-    <button class="btn gr" style="flex:1" id="btnSendPdf" onclick="generatePdf()">📤 Renommer et envoyer</button>
-  </div>
-</div>
+// CAMERA
+async function openCamera(id){
+  const p=PHOTOS.find(x=>x.id_photo===id);
+  if(!p)return;
+  currentPhoto=p;
+  document.getElementById('cam-id').textContent=id;
+  document.getElementById('cam-desc').textContent=p.description;
+  document.getElementById('cam-type').textContent=p.type_photo+' — '+p.cadrage;
+  document.getElementById('cameraScreen').classList.add('active');
+  await startStream();
+}
+async function startStream(){
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:usingFront?'user':'environment',width:{ideal:3840},height:{ideal:2160}}
+    });
+    document.getElementById('video').srcObject=stream;
+  }catch(e){
+    alert('Caméra non disponible : '+e.message);
+    closeCamera();
+  }
+}
+function flipCamera(){usingFront=!usingFront;startStream();}
+function closeCamera(){
+  if(stream)stream.getTracks().forEach(t=>t.stop());
+  stream=null;
+  document.getElementById('cameraScreen').classList.remove('active');
+}
+function takePhoto(){
+  const v=document.getElementById('video');
+  const c=document.getElementById('canvas');
+  c.width=v.videoWidth;c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+  c.toBlob(b=>{
+    blob=b;
+    const url=URL.createObjectURL(b);
+    document.getElementById('previewImg').src=url;
+    document.getElementById('preview-filename').textContent=currentPhoto.id_photo+'.jpg';
+    document.getElementById('preview-resolution').textContent=c.width+'×'+c.height+' px';
+    closeCamera();
+    document.getElementById('previewScreen').classList.add('active');
+  },'image/jpeg',0.92);
+}
+function retake(){
+  document.getElementById('previewScreen').classList.remove('active');
+  blob=null;
+  usingFront=false;
+  openCamera(currentPhoto.id_photo);
+}
 
-<!-- STEP 1b : Aperçu recadrage -->
-<div class="panel" id="p1b">
-  <div style="text-align:center;margin-bottom:10px">
-    <div style="font-size:15px;font-weight:700;margin-bottom:4px">Aperçu du recadrage</div>
-    <p style="font-size:12px;color:var(--mu)">Vérifie que seul le ticket est visible</p>
-  </div>
-  <div style="background:#000;border-radius:12px;overflow:hidden;margin-bottom:12px;border:2px solid var(--gr)">
-    <canvas id="previewCv" style="display:block;width:100%"></canvas>
-  </div>
-  <div class="pbox">
-    <div class="lb">📁 Destination Drive</div>
-    <div class="pt" id="pPth2">—</div>
-    <div class="fn" id="pFn2">—</div>
-  </div>
-  <div class="err" id="errGen2"></div>
-  <div style="display:flex;gap:10px;margin-top:10px">
-    <button class="btn gh" style="max-width:120px" onclick="goTo(1)">← Corriger</button>
-    <button class="btn gr" style="flex:1" id="btnSend" onclick="generate()">📄 Envoyer vers Drive</button>
-  </div>
-</div>
+// UPLOAD DRIVE
+async function uploadToDrive(){
+  if(!blob||!currentPhoto)return;
+  document.getElementById('previewScreen').classList.remove('active');
+  if(!accessToken){
+    showUploadScreen('🔐','Connexion requise','Connecte ton compte Google pour envoyer vers Drive','');
+    document.getElementById('btn-ok').style.display='none';
+    document.getElementById('btn-retry').style.display='none';
+    document.getElementById('authScreen').classList.add('active');
+    return;
+  }
+  await doUpload();
+}
 
-<!-- STEP 2 : Résultat -->
-<div class="panel" id="p2">
-  <div class="dbox">
-    <div class="ico" id="dIco">⏳</div>
-    <h2 id="dTitle">Envoi en cours…</h2>
-    <div class="fnbadge" id="dFn">—</div>
-    <img id="resultImg" alt="ticket">
-    <div class="sbox sup" id="statusBox">⏳ Envoi vers Google Drive…</div>
-    <div id="successBlock" style="display:none;margin-top:10px">
-      <button class="btn gh" style="font-size:13px" onclick="window.open(driveUrl,'_blank')">📂 Voir dans Drive</button>
-    </div>
-    <button class="btn gr" style="margin-top:10px" onclick="goTo(0)">🧾 Scanner un autre ticket</button>
-  </div>
-</div>
+async function doUpload(){
+  const filename=currentPhoto.id_photo+'.jpg';
+  const folderId=DRIVE_FOLDERS[currentPhoto.thematique]||null;
 
-</div>
+  showUploadScreen('☁️','Envoi en cours...',`Dossier : ${currentPhoto.thematique.replace(/_/g,' ')}`,filename);
+  animateBar(0,60,1500);
 
-<!-- Barre fixe step 1 -->
-<div class="bar" id="b1" style="display:none">
-  <button class="btn gh" style="max-width:90px" onclick="goTo(0);stopCam()">← Retour</button>
-  <button class="btn bl" style="flex:1" id="btnPreview" onclick="showCropPreview()">👁 Aperçu du recadrage</button>
+  try{
+    // Chercher si le fichier existe déjà dans le dossier Drive
+    let existingId=null;
+    if(folderId){
+      const q=encodeURIComponent(`name='${filename}' and '${folderId}' in parents and trashed=false`);
+      const searchResp=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`,{
+        headers:{Authorization:'Bearer '+accessToken}
+      });
+      if(searchResp.ok){
+        const searchData=await searchResp.json();
+        if(searchData.files&&searchData.files.length>0)existingId=searchData.files[0].id;
+      }
+    }
+
+    let resp;
+    if(existingId){
+      // UPDATE — écraser le fichier existant
+      const metadata={name:filename,mimeType:'image/jpeg'};
+      const form=new FormData();
+      form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
+      form.append('file',blob,filename);
+      resp=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${existingId}?uploadType=multipart`,{
+        method:'PATCH',
+        headers:{Authorization:'Bearer '+accessToken},
+        body:form
+      });
+    } else {
+      // CREATE — nouveau fichier
+      const metadata={name:filename,mimeType:'image/jpeg'};
+      if(folderId)metadata.parents=[folderId];
+      const form=new FormData();
+      form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
+      form.append('file',blob,filename);
+      resp=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{
+        method:'POST',
+        headers:{Authorization:'Bearer '+accessToken},
+        body:form
+      });
+    }
+
+    if(resp.status===401){
+      accessToken=null;
+      try{localStorage.removeItem('sp_token')}catch(e){}
+      showUploadScreen('🔐','Session expirée','Reconnecte-toi à Google','');
+      document.getElementById('btn-retry').textContent='Se reconnecter';
+      document.getElementById('btn-retry').style.display='block';
+      document.getElementById('btn-retry').onclick=signIn;
+      return;
+    }
+
+    if(!resp.ok)throw new Error('Erreur '+resp.status);
+
+    animateBar(60,100,500);
+    setTimeout(()=>{
+      const label=existingId?'Photo remplacée ✓':'Photo envoyée !';
+      showUploadScreen('✅',label,`Dans Drive → ${currentPhoto.thematique.replace(/_/g,' ')}`,filename);
+      document.getElementById('upload-bar').style.width='100%';
+      document.getElementById('btn-ok').style.display='block';
+    },600);
+
+    done[currentPhoto.id_photo]=true;
+    save();
+
+  }catch(e){
+    showUploadScreen('❌','Échec de l\'envoi',e.message||'Vérifie ta connexion',filename);
+    document.getElementById('btn-retry').style.display='block';
+    document.getElementById('btn-retry').textContent='Réessayer';
+    document.getElementById('btn-retry').onclick=doUpload;
+  }
+}
+
+function showUploadScreen(icon,title,sub,filename){
+  document.getElementById('upload-icon').textContent=icon;
+  document.getElementById('upload-title').textContent=title;
+  document.getElementById('upload-sub').textContent=sub;
+  document.getElementById('upload-filename').textContent=filename;
+  document.getElementById('upload-bar').style.width='0%';
+  document.getElementById('btn-ok').style.display='none';
+  document.getElementById('btn-retry').style.display='none';
+  document.getElementById('uploadScreen').classList.add('active');
+}
+function animateBar(from,to,duration){
+  const bar=document.getElementById('upload-bar');
+  const start=Date.now();
+  function step(){
+    const p=Math.min(1,(Date.now()-start)/duration);
+    bar.style.width=(from+(to-from)*p)+'%';
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+function uploadDone(){
+  document.getElementById('uploadScreen').classList.remove('active');
+  if(currentPhoto){done[currentPhoto]=true;save();window._checkedState[currentPhoto]=true;saveState(window._checkedState);}
+  blob=null;
+  showPhotos();
+}
+function retryUpload(){doUpload();}
+
+checkAuth();
+showThemes();
+</script>
+
+
+
+<div id="tokenBanner" style="display:none;position:fixed;top:0;left:0;right:0;background:#1B3A5C;color:#fff;padding:14px;z-index:9999;font-size:14px;">
+  <div style="margin-bottom:8px;font-weight:bold;">🔑 Token GitHub requis pour sauvegarder l'état des photos</div>
+  <input id="tokenInput" type="password" placeholder="ghp_xxx..." style="width:100%;padding:8px;border-radius:6px;border:none;font-size:13px;margin-bottom:8px;">
+  <button onclick="saveToken()" style="background:#27AE60;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:14px;font-weight:bold;">Enregistrer</button>
 </div>
 
 <script>
-// ── Constantes ─────────────────────────────────────────────
-var GOOGLE_CLIENT_ID='1075001419936-emgoarlug8jnvmqnhc32ro58lmlhb2qh.apps.googleusercontent.com';
-var SCOPES='https://www.googleapis.com/auth/drive.file';
-var MONTHS={1:'01-Janvier',2:'02-Février',3:'03-Mars',4:'04-Avril',5:'05-Mai',6:'06-Juin',7:'07-Juillet',8:'08-Août',9:'09-Septembre',10:'10-Octobre',11:'11-Novembre',12:'12-Décembre'};
-var MOIS=['','janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-var MOIS_EN=['','January','February','March','April','May','June','July','August','September','October','November','December'];
-var ACHAT={
-  '2026':{
-    '01-Janvier 2026':'14vABkwN0X7s_9gU-2WW6Qka9L-OevFAY',
-    '02-Février 2026':'1X8ku8f-pM_jfQC2K8SmtuGuLH73EcCqE',
-    '03-Mars 2026':'1S1XelTqSLoK_MvB3Mm-dRiaQgxyYq3NN',
-    '04-Avril 2026':'1Rc77ZtUR2u_PGr73U17-H5mPHVQM4HQq',
-    '05-Mai 2026':'19-WK0nWpx-Vq8RLY3PaR4lFf4TPdDTcO',
-    '06-Juin 2026':'1eqtZCa8D4fUFVIjg2GvJBwhmrZA48u8n',
-    '07-Juillet 2026':'1w6Rk7-f14g-Hl3vJFBMllQrx_VSfrBQH',
-    '08-Août 2026':'1QWqcu_1zfUA9OM-qw3VCivklhhNXe7an',
-    '09-Septembre 2026':'1uN2lhhrnBElCNKstoZUpo5YOJcYYg-ak',
-    '10-Octobre 2026':'1TL8BTxrHHETGxYz4Z8ESJgxeSWdRut8Z',
-    '11-Novembre 2026':'1RMJQtD4KE4mYsNhz26oJD_H6vQNhfQk_',
-    '12-Décembre 2026':'10r48gLXDoXwz9hamdGQT_dUxeIyYudGg'
-  }
-};
-var ROOT='1h1IcvWtfrgATFa2VeZAb1p6bnEkaVXMq';
+// ── PERSISTANCE ÉTAT PHOTOS ──────────────────────────────
+const GH_REPO = "francktami-bot/regisseur-sailoe";
+const GH_FILE = "state.json";
+const GH_API  = "https://api.github.com/repos/" + GH_REPO + "/contents/" + GH_FILE;
+window._ghSha = null;
+window._checkedState = {};
 
-// ── Locale config ──────────────────────────────────────────
-var LOCALES={
-  FR:{cur:'EUR',sym:'€',dateFmt:'DD/MM/YYYY',datePh:'JJ/MM/AAAA',totalPh:'171,70',curLabel:'💶 Total TTC (€)'},
-  US:{cur:'USD',sym:'$',dateFmt:'MM/DD/YYYY',datePh:'MM/DD/YYYY',totalPh:'171.70',curLabel:'💵 Total (USD $)'},
-  CA:{cur:'CAD',sym:'$',dateFmt:'MM/DD/YYYY',datePh:'MM/DD/YYYY',totalPh:'171.70',curLabel:'💵 Total (CAD $)'},
-  GB:{cur:'GBP',sym:'£',dateFmt:'DD/MM/YYYY',datePh:'DD/MM/YYYY',totalPh:'171.70',curLabel:'💷 Total (GBP £)'}
-};
-var locale='FR';
-
-function setLocale(loc){
-  locale=loc;
-  var cfg=LOCALES[loc];
-  // Update UI
-  document.querySelectorAll('.locale-bar button').forEach(function(b){b.className='';});
-  var el=document.getElementById('loc_'+loc);
-  if(el) el.className='active';
-  document.getElementById('fD').placeholder='JJ/MM/AAAA';
-  document.getElementById('fT').placeholder=cfg.totalPh;
-  document.getElementById('fCur').value=cfg.cur;
-  document.getElementById('totalLabel').textContent=cfg.curLabel;
-  // Save preference
-  localStorage.setItem('os_locale',loc);
-  updPath();
+function getToken() {
+  return localStorage.getItem('regisseur_gh_token') || '';
 }
 
-// ── Date parsing — handles both DD/MM/YYYY and MM/DD/YYYY ──
-function parseDate(raw){
-  if(!raw) return null;
-  var pts=raw.split(/[\/\-\.]/);
-  if(pts.length<3) return null;
-  var a=parseInt(pts[0])||0, b=parseInt(pts[1])||0, c=parseInt(pts[2])||0;
-  // Fix 2-digit year
-  if(c<100) c=2000+c;
-  var day,month,year=c;
-  var fmt=LOCALES[locale].dateFmt;
-  if(fmt==='MM/DD/YYYY'){
-    month=a; day=b;
-  } else {
-    day=a; month=b;
-  }
-  // Sanity check — swap if month>12 (user probably used wrong format)
-  if(month>12&&day<=12){ var tmp=month; month=day; day=tmp; }
-  if(month<1||month>12) month=new Date().getMonth()+1;
-  if(day<1||day>31) day=1;
-  return {day:day, month:month, year:year};
+function saveToken() {
+  const t = document.getElementById('tokenInput').value.trim();
+  if (!t.startsWith('ghp_')) { alert('Token invalide — doit commencer par ghp_'); return; }
+  localStorage.setItem('regisseur_gh_token', t);
+  document.getElementById('tokenBanner').style.display = 'none';
+  initCheckedState();
 }
 
-function formatDateForFilename(parsed){
-  if(!parsed) return '00-mois-2026';
-  return pad(parsed.day)+'-'+(MOIS[parsed.month]||'mois')+'-'+parsed.year;
+async function loadState() {
+  const token = getToken();
+  if (!token) { document.getElementById('tokenBanner').style.display = 'block'; return {}; }
+  try {
+    const r = await fetch(GH_API, { headers: { Authorization: "token " + token } });
+    if (r.status === 404) return {};
+    if (!r.ok) { localStorage.removeItem('regisseur_gh_token'); document.getElementById('tokenBanner').style.display = 'block'; return {}; }
+    const j = await r.json();
+    window._ghSha = j.sha;
+    return JSON.parse(atob(j.content.replace(/\n/g,'')));
+  } catch(e) { return {}; }
 }
 
-function formatDateDisplay(parsed){
-  if(!parsed) return '';
-  return pad(parsed.day)+'/'+pad(parsed.month)+'/'+parsed.year;
-}
-
-// ── Currency formatting for filename ───────────────────────
-function curLabel(val,cur){
-  var v=String(val||'0').replace(',','.');
-  var n=parseFloat(v);
-  if(isNaN(n)) n=0;
-  var cfg=LOCALES[locale];
-  cur=cur||cfg.cur;
-  if(cur==='EUR') return n.toFixed(2).replace('.',',')+' euros';
-  if(cur==='USD') return n.toFixed(2)+' USD';
-  if(cur==='CAD') return n.toFixed(2)+' CAD';
-  if(cur==='GBP') return n.toFixed(2)+' GBP';
-  return n.toFixed(2)+' '+cur;
-}
-
-function getFolderId(mk,yr){
-  var yd=ACHAT[String(yr)];
-  return (yd&&yd[mk])?yd[mk]:null;
-}
-
-// ── State ──────────────────────────────────────────────────
-var API_KEY=localStorage.getItem('os_api_key')||'';
-var gToken=null, tokenClient=null;
-var snapData=null, pdfBlob=null, driveUrl='', pdfName='';
-var imgEl=null, iw=0, ih=0;
-var box={x:.05,y:.05,w:.9,h:.9};
-var drag=null, camStream=null;
-// Canvas display dimensions (for correct coordinate mapping)
-var cvDisplayW=0, cvDisplayH=0;
-
-// ── Init ───────────────────────────────────────────────────
-window.addEventListener('load',function(){
-  // Restore locale
-  var savedLoc=localStorage.getItem('os_locale');
-  if(savedLoc&&LOCALES[savedLoc]) setLocale(savedLoc);
-  if(!API_KEY) goPanel('pConfig');
-  else goPanel('pDrive');
-});
-
-function goPanel(id){
-  ['pConfig','pDrive','p0','p1','p1b','pPdf','p2'].forEach(function(p){
-    var el=document.getElementById(p);
-    if(el) el.className='panel'+(p===id?' on':'');
-  });
-  document.getElementById('b1').style.display=(id==='p1')?'flex':'none';
-  window.scrollTo(0,0);
-}
-function goTo(n){ goPanel('p'+n); }
-
-// ── Clé API ────────────────────────────────────────────────
-function saveApiKey(){
-  var k=document.getElementById('apiKeyInput').value.trim();
-  if(!k||!k.startsWith('sk-')){ alert('Clé invalide'); return; }
-  localStorage.setItem('os_api_key',k); API_KEY=k;
-  goPanel('pDrive');
-}
-
-// ── Google Drive OAuth ─────────────────────────────────────
-function connectGoogle(){
-  var btn=document.getElementById('btnDriveConnect');
-  if(btn){ btn.textContent='⏳ Connexion…'; btn.disabled=true; }
-  if(!tokenClient){
-    tokenClient=google.accounts.oauth2.initTokenClient({
-      client_id:GOOGLE_CLIENT_ID, scope:SCOPES,
-      callback:function(resp){
-        if(resp.error){
-          if(btn){ btn.textContent='⚠️ Réessayer'; btn.disabled=false; btn.style.background='#ef4444'; }
-          return;
-        }
-        gToken=resp.access_token;
-        var banner=document.getElementById('driveBanner');
-        var msg=document.getElementById('driveMsg');
-        var bc=document.getElementById('driveBtnConnect');
-        if(banner){ banner.style.borderColor='#10b981'; banner.style.background='#0c1f12'; }
-        if(msg){ msg.textContent='✅ Connecté'; msg.style.color='#4ade80'; }
-        if(bc){ bc.textContent='✅'; bc.style.background='#10b981'; }
-        goPanel('p0');
-      }
+async function saveState(checkedIds) {
+  const token = getToken();
+  if (!token) return;
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(checkedIds))));
+  const body = { message: "update state", content: content };
+  if (window._ghSha) body.sha = window._ghSha;
+  try {
+    const r = await fetch(GH_API, {
+      method: "PUT",
+      headers: { Authorization: "token " + token, "Content-Type": "application/json" },
+      body: JSON.stringify(body)
     });
-  }
-  tokenClient.requestAccessToken();
+    const j = await r.json();
+    if (j.content) window._ghSha = j.content.sha;
+  } catch(e) { console.error("saveState error", e); }
 }
 
-// ── Caméra ─────────────────────────────────────────────────
-function startCam(){
-  document.getElementById('errCam').textContent='';
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920}}})
-  .then(function(s){
-    camStream=s;
-    var v=document.getElementById('vid');
-    v.srcObject=s; v.style.display='block';
-    document.getElementById('btnStartCam').style.display='none';
-    document.getElementById('camActions').style.display='flex';
-  })
-  .catch(function(e){ document.getElementById('errCam').textContent='Caméra : '+e.message; });
-}
-function stopCam(){
-  if(camStream){ camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
-  var v=document.getElementById('vid');
-  v.style.display='none'; v.srcObject=null;
-  document.getElementById('btnStartCam').style.display='flex';
-  document.getElementById('camActions').style.display='none';
-}
-function doSnap(){
-  var v=document.getElementById('vid');
-  var c=document.getElementById('snapCv');
-  c.width=v.videoWidth; c.height=v.videoHeight;
-  c.getContext('2d').drawImage(v,0,0);
-  snapData=c.toDataURL('image/jpeg',0.95);
-  stopCam();
-  box={x:.05,y:.05,w:.9,h:.9};
-  document.getElementById('fE').value='';
-  document.getElementById('fD').value=todLocal();
-  document.getElementById('fT').value='';
-  document.getElementById('iaMsg').textContent='';
-  document.getElementById('iaBtn').disabled=false;
-  document.getElementById('iaBtn').textContent='Analyser';
-  document.getElementById('errGen').textContent='';
-  initCrop();
-  updPath();
-  goTo(1);
-}
-
-// ── Canvas recadrage — FIX: maintain exact aspect ratio ────
-function initCrop(){
-  var c=document.getElementById('cropCv');
-  var wrap=document.getElementById('cropWrap');
-  imgEl=new Image();
-  imgEl.onload=function(){
-    iw=imgEl.width; ih=imgEl.height;
-    c.width=iw; c.height=ih;
-
-    // FIX v1.4: maintain EXACT aspect ratio — never distort
-    var wrapW=wrap.clientWidth||340;
-    var ratio=ih/iw;
-    var displayW=wrapW;
-    var displayH=Math.round(wrapW*ratio);
-    // If too tall, shrink both dimensions proportionally
-    var maxH=Math.round(window.innerHeight*0.55);
-    if(displayH>maxH){
-      displayH=maxH;
-      displayW=Math.round(maxH/ratio);
+async function initCheckedState() {
+  const state = await loadState();
+  window._checkedState = state || {};
+  Object.keys(window._checkedState).forEach(id => {
+    if (window._checkedState[id]) {
+      const cb = document.querySelector('input[data-id="' + id + '"]');
+      if (cb) { cb.checked = true; cb.closest('li').classList.add('done'); }
     }
-    c.style.width=displayW+'px';
-    c.style.height=displayH+'px';
-    // Center canvas if narrower than wrapper
-    if(displayW<wrapW){
-      c.style.marginLeft=Math.round((wrapW-displayW)/2)+'px';
-    } else {
-      c.style.marginLeft='0';
-    }
-
-    // Attach touch events programmatically (non-passive for iOS)
-    c.addEventListener('touchstart',onDown,{passive:false});
-    c.addEventListener('touchmove',onMove,{passive:false});
-    c.addEventListener('touchend',onUp,{passive:false});
-    c.addEventListener('mousedown',onDown);
-    c.addEventListener('mousemove',onMove);
-    c.addEventListener('mouseup',onUp);
-
-    redraw();
-  };
-  imgEl.src=snapData;
-}
-
-function redraw(){
-  if(!imgEl) return;
-  var c=document.getElementById('cropCv');
-  var ctx=c.getContext('2d');
-  ctx.drawImage(imgEl,0,0);
-  var bx=box.x*iw, by=box.y*ih, bw=box.w*iw, bh=box.h*ih;
-  if(document.getElementById('bgTog').checked){
-    ctx.fillStyle='rgba(0,0,0,.76)';
-    ctx.fillRect(0,0,iw,by);
-    ctx.fillRect(0,by+bh,iw,ih-by-bh);
-    ctx.fillRect(0,by,bx,bh);
-    ctx.fillRect(bx+bw,by,iw-bx-bw,bh);
-  }
-  ctx.strokeStyle='#3b82f6'; ctx.lineWidth=Math.max(3,iw/150);
-  ctx.strokeRect(bx,by,bw,bh);
-  var T=Math.max(20,iw/22);
-  [[bx,by],[bx+bw,by],[bx,by+bh],[bx+bw,by+bh]].forEach(function(p){
-    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(p[0],p[1],T,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='#3b82f6'; ctx.lineWidth=3; ctx.stroke();
   });
+  if (typeof updateCounters === 'function') updateCounters();
 }
 
-function getPt(e){
-  var c=document.getElementById('cropCv');
-  var r=c.getBoundingClientRect();
-  // FIX v1.4: always use live bounding rect for accurate mapping
-  var sx=iw/r.width, sy=ih/r.height;
-  var s=e.touches?e.touches[0]:e;
-  return{x:(s.clientX-r.left)*sx, y:(s.clientY-r.top)*sy};
-}
-
-function getHit(px,py){
-  var bx=box.x*iw,by=box.y*ih,bw=box.w*iw,bh=box.h*ih;
-  var T=Math.max(40,iw/10); // FIX v1.2: bigger hit zone for mobile
-  if(Math.abs(px-bx)<T&&Math.abs(py-by)<T) return'tl';
-  if(Math.abs(px-(bx+bw))<T&&Math.abs(py-by)<T) return'tr';
-  if(Math.abs(px-bx)<T&&Math.abs(py-(by+bh))<T) return'bl';
-  if(Math.abs(px-(bx+bw))<T&&Math.abs(py-(by+bh))<T) return'br';
-  if(px>bx&&px<bx+bw&&py>by&&py<by+bh) return'mv';
-  return null;
-}
-
-function onDown(e){
-  e.preventDefault();
-  var p=getPt(e),h=getHit(p.x,p.y);
-  if(!h) return;
-  drag={h:h,sp:p,sb:{x:box.x,y:box.y,w:box.w,h:box.h}};
-}
-
-function onMove(e){
-  if(!drag) return;
-  e.preventDefault();
-  var p=getPt(e),dx=(p.x-drag.sp.x)/iw,dy=(p.y-drag.sp.y)/ih;
-  var ox=drag.sb.x,oy=drag.sb.y,ow=drag.sb.w,oh=drag.sb.h;
-  var nx=ox,ny=oy,nw=ow,nh=oh;
-  var mn=.04,h=drag.h;
-
-  if(h==='mv'){
-    nx=ox+dx; ny=oy+dy;
-  } else if(h==='tl'){
-    nx=ox+dx; ny=oy+dy; nw=ow-dx; nh=oh-dy;
-  } else if(h==='tr'){
-    ny=oy+dy; nw=ow+dx; nh=oh-dy;
-  } else if(h==='bl'){
-    nx=ox+dx; nw=ow-dx; nh=oh+dy;
-  } else if(h==='br'){
-    nw=ow+dx; nh=oh+dy;
-  }
-
-  // Enforce minimums
-  if(nw<mn){ nw=mn; if(h==='tl'||h==='bl') nx=ox+ow-mn; }
-  if(nh<mn){ nh=mn; if(h==='tl'||h==='tr') ny=oy+oh-mn; }
-  // Clamp to 0..1
-  if(nx<0){if(h==='mv'){nx=0;}else{nw+=nx;nx=0;}}
-  if(ny<0){if(h==='mv'){ny=0;}else{nh+=ny;ny=0;}}
-  if(nx+nw>1){if(h==='mv'){nx=1-nw;}else{nw=1-nx;}}
-  if(ny+nh>1){if(h==='mv'){ny=1-nh;}else{nh=1-ny;}}
-
-  box={x:nx,y:ny,w:nw,h:nh};
-  redraw();
-}
-
-function onUp(){ drag=null; }
-
-// ── Analyse IA ─────────────────────────────────────────────
-function runIA(){
-  if(!snapData) return;
-  var btn=document.getElementById('iaBtn'),msg=document.getElementById('iaMsg');
-  btn.disabled=true; btn.textContent='⏳';
-  msg.style.color='#94a3b8'; msg.textContent='Analyse en cours…';
-  var b64=snapData.split(',')[1],mt=snapData.split(';')[0].split(':')[1];
-
-  var dateInstruction='';
-  if(locale==='US'||locale==='CA'){
-    dateInstruction='The receipt is from '+locale+'. Date format is likely MM/DD/YYYY. Return the date as DD/MM/YYYY regardless (convert it).';
+async function togglePhoto(cb) {
+  const id = cb.dataset.id;
+  const li = cb.closest('li');
+  if (cb.checked) {
+    li.classList.add('done');
+    window._checkedState[id] = true;
   } else {
-    dateInstruction='Le ticket est français. La date est au format JJ/MM/AAAA.';
+    li.classList.remove('done');
+    delete window._checkedState[id];
   }
-
-  var curInstruction='';
-  var cfg=LOCALES[locale];
-  if(cfg.cur!=='EUR'){
-    curInstruction='The currency is '+cfg.cur+' ('+cfg.sym+'). Return the total amount as a number with dot decimal (e.g. "171.70").';
-  } else {
-    curInstruction='La devise est EUR (€). Renvoie le total TTC en chiffres avec point décimal (ex: "171.70").';
-  }
-
-  var prompt='Analyse ce ticket de caisse avec soin.\n'+
-    'Réponds UNIQUEMENT avec ce JSON (sans backticks, sans texte autour) :\n'+
-    '{"crop":{"x":0.0,"y":0.0,"w":1.0,"h":1.0},"establishment":"NOM","date":"DD/MM/YYYY","total":"0.00","currency":"'+cfg.cur+'"}\n\n'+
-    'Règles :\n'+
-    '- crop : zone du ticket dans l\'image (0.0 à 1.0)\n'+
-    '- establishment : nom exact du commerce en haut du ticket. Jamais vide.\n'+
-    '- date : TOUJOURS au format DD/MM/YYYY (jour/mois/année 4 chiffres). '+dateInstruction+'\n'+
-    '- total : montant TOTAL TTC final payé, chiffres avec point décimal. '+curInstruction+'\n'+
-    '- currency : code devise (EUR, USD, CAD, GBP)';
-
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key':API_KEY,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
-    },
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',max_tokens:300,
-      messages:[{role:'user',content:[
-        {type:'image',source:{type:'base64',media_type:mt,data:b64}},
-        {type:'text',text:prompt}
-      ]}]
-    })
-  })
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(d.error){msg.style.color='#fca5a5';msg.textContent='❌ '+d.error.message;btn.textContent='Réessayer';btn.disabled=false;return;}
-    var txt=((d.content||[]).find(function(b){return b.type==='text';})||{}).text||'';
-    try{
-      var m=txt.replace(/```[a-z]*/gi,'').replace(/```/g,'').match(/\{[\s\S]*\}/);
-      var p=JSON.parse(m?m[0]:txt);
-      if(p.crop&&p.crop.w>.1){
-        box={x:cl(p.crop.x,.05),y:cl(p.crop.y,.05),w:cl(p.crop.w,.9),h:cl(p.crop.h,.9)};
-        redraw();
-      }
-      if(p.establishment) document.getElementById('fE').value=p.establishment;
-      if(p.date){
-        // IA always returns DD/MM/YYYY — convert to locale display
-        var parsed=parseDateDDMMYYYY(p.date);
-        if(parsed) document.getElementById('fD').value=formatDateDisplay(parsed);
-        else document.getElementById('fD').value=p.date;
-      }
-      if(p.total) document.getElementById('fT').value=p.total;
-      // Auto-detect currency from IA
-      if(p.currency&&LOCALES[p.currency===locale?locale:Object.keys(LOCALES).find(function(k){return LOCALES[k].cur===p.currency;})||locale]){
-        var detectedLocale=Object.keys(LOCALES).find(function(k){return LOCALES[k].cur===p.currency;});
-        if(detectedLocale&&detectedLocale!==locale){
-          setLocale(detectedLocale);
-        }
-        document.getElementById('fCur').value=p.currency;
-      }
-      updPath();
-      msg.style.color='#4ade80'; msg.textContent='✅ Vérifie et corrige si besoin';
-    }catch(e){
-      msg.style.color='#fbbf24'; msg.textContent='⚠️ Remplis manuellement';
-    }
-    btn.textContent='Ré-analyser'; btn.disabled=false;
-  })
-  .catch(function(){
-    msg.style.color='#fbbf24'; msg.textContent='⚠️ Réseau indisponible';
-    btn.textContent='Réessayer'; btn.disabled=false;
-  });
+  if (typeof updateCounters === 'function') updateCounters();
+  await saveState(window._checkedState);
 }
 
-// Parse a date string known to be DD/MM/YYYY (from IA)
-function parseDateDDMMYYYY(s){
-  var pts=s.split(/[\/\-\.]/);
-  if(pts.length<3) return null;
-  var d=parseInt(pts[0])||1,m=parseInt(pts[1])||1,y=parseInt(pts[2])||2026;
-  if(y<100) y+=2000;
-  if(m>12&&d<=12){var tmp=m;m=d;d=tmp;}
-  return{day:d,month:m,year:y};
-}
-
-// ── Chemin Drive ───────────────────────────────────────────
-function updPath(){
-  var e=san(document.getElementById('fE').value||'Etablissement');
-  var dateRaw=document.getElementById('fD').value||todLocal();
-  var tRaw=document.getElementById('fT').value||'0';
-  var cur=document.getElementById('fCur').value||LOCALES[locale].cur;
-
-  var parsed=parseDate(dateRaw);
-  if(!parsed) parsed={day:1,month:new Date().getMonth()+1,year:new Date().getFullYear()};
-
-  var df=formatDateForFilename(parsed);
-  var tf=curLabel(tRaw,cur);
-  var mk=MONTHS[parsed.month]+' '+parsed.year;
-  var fn=e+'_'+df+'_'+tf+'.pdf';
-
-  document.getElementById('pPth').textContent=mk+' › Achat';
-  document.getElementById('pFn').textContent=fn;
-}
-
-// ── Aperçu recadrage ───────────────────────────────────────
-function showCropPreview(){
-  var errEl=document.getElementById('errGen');
-  errEl.textContent='';
-  var eRaw=document.getElementById('fE').value.trim();
-  var dRaw=document.getElementById('fD').value.trim();
-  var tRaw=document.getElementById('fT').value.trim();
-  if(!eRaw){errEl.textContent='Établissement manquant';return;}
-  if(!dRaw){errEl.textContent='Date manquante';return;}
-  if(!tRaw){errEl.textContent='Total manquant';return;}
-  if(!imgEl){errEl.textContent='Image non disponible';return;}
-
-  // Draw cropped preview
-  var bx=Math.round(box.x*iw), by=Math.round(box.y*ih);
-  var bw=Math.round(box.w*iw), bh=Math.round(box.h*ih);
-  if(bx<0) bx=0; if(by<0) by=0;
-  if(bx+bw>iw) bw=iw-bx; if(by+bh>ih) bh=ih-by;
-  if(bw<10||bh<10){errEl.textContent='Zone trop petite';return;}
-
-  var pc=document.getElementById('previewCv');
-  pc.width=bw; pc.height=bh;
-  var pctx=pc.getContext('2d');
-  pctx.fillStyle='#fff'; pctx.fillRect(0,0,bw,bh);
-  pctx.drawImage(imgEl,bx,by,bw,bh,0,0,bw,bh);
-
-  // Copy path info
-  document.getElementById('pPth2').textContent=document.getElementById('pPth').textContent;
-  document.getElementById('pFn2').textContent=document.getElementById('pFn').textContent;
-  document.getElementById('errGen2').textContent='';
-
-  goPanel('p1b');
-}
-
-// ── Générer + Upload ───────────────────────────────────────
-function generate(){
-  var errEl=document.getElementById('errGen');
-  errEl.textContent='';
-  var btn=document.getElementById('btnGen');
-
-  var eRaw=document.getElementById('fE').value.trim();
-  var dRaw=document.getElementById('fD').value.trim();
-  var tRaw=document.getElementById('fT').value.trim();
-  var cur=document.getElementById('fCur').value||LOCALES[locale].cur;
-
-  if(!eRaw){errEl.textContent='❌ Établissement manquant';return;}
-  if(!dRaw){errEl.textContent='❌ Date manquante';return;}
-  if(!tRaw){errEl.textContent='❌ Total manquant';return;}
-  if(!imgEl){errEl.textContent='❌ Image non disponible';return;}
-
-  var etab=san(eRaw);
-  var parsed=parseDate(dRaw);
-  if(!parsed){errEl.textContent='❌ Format de date invalide';return;}
-
-  var df=formatDateForFilename(parsed);
-  var tf=curLabel(tRaw,cur);
-  var mk=MONTHS[parsed.month]+' '+parsed.year;
-  pdfName=etab+'_'+df+'_'+tf+'.pdf';
-  var fid=getFolderId(mk,parsed.year);
-  var folderId=fid||ROOT;
-  driveUrl='https://drive.google.com/drive/folders/'+folderId;
-
-  if(!fid){
-    if(!window.confirm('⚠️ Dossiers Drive pour '+parsed.year+' non configurés.\nLe PDF ira dans le dossier racine.\n\nContinuer ?')) return;
-  }
-
-  btn.disabled=true; btn.textContent='⏳ Génération…';
-
-  try{
-    // FIX v1.2: clamp crop to avoid drawImage overflow
-    var bx=Math.round(box.x*iw), by=Math.round(box.y*ih);
-    var bw=Math.round(box.w*iw), bh=Math.round(box.h*ih);
-    // Ensure we don't exceed image bounds
-    if(bx<0) bx=0;
-    if(by<0) by=0;
-    if(bx+bw>iw) bw=iw-bx;
-    if(by+bh>ih) bh=ih-by;
-    if(bw<10||bh<10){errEl.textContent='❌ Zone de recadrage trop petite';btn.disabled=false;btn.textContent='📄 Générer et envoyer';return;}
-
-    var tmp=document.createElement('canvas');
-    tmp.width=bw; tmp.height=bh;
-    var tc=tmp.getContext('2d');
-    tc.fillStyle='#fff'; tc.fillRect(0,0,bw,bh);
-    tc.drawImage(imgEl,bx,by,bw,bh,0,0,bw,bh);
-
-    var J=window.jspdf.jsPDF;
-    var mW=190,mH=270,ratio=bw/bh,pw=mW,ph=mW/ratio;
-    if(ph>mH){ph=mH;pw=ph*ratio;}
-    var doc=new J({orientation:'portrait',unit:'mm',format:'a4'});
-    doc.addImage(tmp.toDataURL('image/jpeg',.92),'JPEG',(210-pw)/2,(297-ph)/2,pw,ph);
-    pdfBlob=doc.output('blob');
-
-    document.getElementById('resultImg').src=tmp.toDataURL('image/jpeg',.7);
-    document.getElementById('resultImg').style.display='block';
-    document.getElementById('dFn').textContent=pdfName;
-    document.getElementById('dIco').textContent='⏳';
-    document.getElementById('dTitle').textContent='Envoi vers Drive…';
-    document.getElementById('statusBox').className='sbox sup';
-    document.getElementById('statusBox').textContent='⏳ Upload vers Google Drive…';
-    document.getElementById('successBlock').style.display='none';
-    goTo(2);
-    uploadToDrive(pdfBlob,pdfName,folderId);
-
-  }catch(e){
-    errEl.textContent='❌ Erreur PDF : '+e.message;
-  }
-  btn.disabled=false; btn.textContent='📄 Générer et envoyer';
-}
-
-// ── Upload Drive ───────────────────────────────────────────
-function uploadToDrive(blob,filename,folderId){
-  var sb=document.getElementById('statusBox');
-  if(!gToken){
-    document.getElementById('dIco').textContent='❌';
-    document.getElementById('dTitle').textContent='Non connecté à Drive';
-    sb.className='sbox serr'; sb.textContent='❌ Non connecté — retourne et connecte Drive';
-    document.getElementById('successBlock').style.display='block';
-    return;
-  }
-  var meta={name:filename,mimeType:'application/pdf',parents:[folderId]};
-  var form=new FormData();
-  form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
-  form.append('file',blob);
-  fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{
-    method:'POST', headers:{Authorization:'Bearer '+gToken}, body:form
-  })
-  .then(function(r){
-    if(!r.ok) return r.json().then(function(e){throw new Error(e.error?e.error.message:r.status);});
-    return r.json();
-  })
-  .then(function(){
-    document.getElementById('dIco').textContent='✅';
-    document.getElementById('dTitle').textContent='PDF enregistré dans Drive !';
-    sb.className='sbox sok';
-    sb.textContent='✅ '+filename+' → '+document.getElementById('pPth').textContent;
-    document.getElementById('successBlock').style.display='block';
-  })
-  .catch(function(e){
-    document.getElementById('dIco').textContent='❌';
-    document.getElementById('dTitle').textContent='Erreur upload';
-    sb.className='sbox serr'; sb.textContent='❌ '+e.message;
-    document.getElementById('successBlock').style.display='block';
-  });
-}
-
-// ── PDF Import ─────────────────────────────────────────────
-var pdfFile=null, pdfText='';
-
-function handlePDF(input){
-  var f=input.files&&input.files[0];
-  if(!f) return;
-  pdfFile=f;
-  document.getElementById('pdfFileName').textContent=f.name;
-  document.getElementById('pdfFileSize').textContent=Math.round(f.size/1024)+' KB';
-  document.getElementById('fE2').value='';
-  document.getElementById('fD2').value='';
-  document.getElementById('fT2').value='';
-  document.getElementById('iaMsgPdf').textContent='';
-  document.getElementById('iaBtnPdf').disabled=false;
-  document.getElementById('iaBtnPdf').textContent='Analyser';
-  document.getElementById('errPdf').textContent='';
-  // Sync locale buttons
-  syncLocaleButtons();
-  updPathPdf();
-  goPanel('pPdf');
-  // Auto-extract text from PDF
-  extractPdfText(f);
-}
-
-function extractPdfText(file){
-  var reader=new FileReader();
-  reader.onload=function(){
-    var arr=new Uint8Array(reader.result);
-    if(typeof pdfjsLib==='undefined'){
-      pdfText=''; return;
-    }
-    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    pdfjsLib.getDocument({data:arr}).promise.then(function(doc){
-      var pages=[];
-      var total=doc.numPages;
-      function getPage(n){
-        if(n>total){
-          pdfText=pages.join('\n');
-          // Auto-run IA if we got text
-          if(pdfText.length>20) runPdfIA();
-          return;
-        }
-        doc.getPage(n).then(function(page){
-          page.getTextContent().then(function(tc){
-            pages.push(tc.items.map(function(i){return i.str;}).join(' '));
-            getPage(n+1);
-          });
-        });
-      }
-      getPage(1);
-    }).catch(function(){pdfText='';});
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function syncLocaleButtons(){
-  document.querySelectorAll('#localeBarPdf button').forEach(function(b){b.className='';});
-  var el=document.getElementById('loc2_'+locale);
-  if(el) el.className='active';
-  var cfg=LOCALES[locale];
-  document.getElementById('fCur2').value=cfg.cur;
-  document.getElementById('totalLabelPdf').textContent=cfg.curLabel;
-}
-
-function runPdfIA(){
-  var btn=document.getElementById('iaBtnPdf'),msg=document.getElementById('iaMsgPdf');
-  if(!pdfText||pdfText.length<10){
-    msg.style.color='#fbbf24'; msg.textContent='Texte PDF non extrait — remplis manuellement';
-    return;
-  }
-  btn.disabled=true; btn.textContent='⏳';
-  msg.style.color='#94a3b8'; msg.textContent='Analyse en cours…';
-
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key':API_KEY,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
-    },
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',max_tokens:300,
-      messages:[{role:'user',content:'Voici le texte extrait d\'une facture PDF. Extrais les informations et renvoie UNIQUEMENT ce JSON (sans backticks):\n{"establishment":"NOM","date":"DD/MM/YYYY","total":"0.00","currency":"EUR"}\n\nRegles:\n- establishment: nom de la societe qui facture\n- date: date de facturation au format DD/MM/YYYY. Si la date source est en format US (MM/DD/YYYY), convertis-la.\n- total: montant TTC final, chiffres avec point decimal\n- currency: EUR, USD, CAD ou GBP\n\nTexte:\n'+pdfText.substring(0,3000)}]
-    })
-  })
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(d.error){msg.style.color='#fca5a5';msg.textContent='Erreur: '+d.error.message;btn.textContent='Reessayer';btn.disabled=false;return;}
-    var txt=((d.content||[]).find(function(b){return b.type==='text';})||{}).text||'';
-    try{
-      var m=txt.replace(/```[a-z]*/gi,'').replace(/```/g,'').match(/\{[\s\S]*\}/);
-      var p=JSON.parse(m?m[0]:txt);
-      if(p.establishment) document.getElementById('fE2').value=p.establishment;
-      if(p.date){
-        var parsed=parseDateDDMMYYYY(p.date);
-        if(parsed) document.getElementById('fD2').value=formatDateDisplay(parsed);
-        else document.getElementById('fD2').value=p.date;
-      }
-      if(p.total) document.getElementById('fT2').value=p.total;
-      if(p.currency){
-        var det=Object.keys(LOCALES).find(function(k){return LOCALES[k].cur===p.currency;});
-        if(det){ setLocale(det); syncLocaleButtons(); }
-        document.getElementById('fCur2').value=p.currency;
-      }
-      updPathPdf();
-      msg.style.color='#4ade80'; msg.textContent='Verifie et corrige si besoin';
-    }catch(e){
-      msg.style.color='#fbbf24'; msg.textContent='Remplis manuellement';
-    }
-    btn.textContent='Re-analyser'; btn.disabled=false;
-  })
-  .catch(function(){
-    msg.style.color='#fbbf24'; msg.textContent='Reseau indisponible';
-    btn.textContent='Reessayer'; btn.disabled=false;
-  });
-}
-
-function updPathPdf(){
-  var e=san(document.getElementById('fE2').value||'Facture');
-  var dateRaw=document.getElementById('fD2').value||todLocal();
-  var tRaw=document.getElementById('fT2').value||'0';
-  var cur=document.getElementById('fCur2').value||LOCALES[locale].cur;
-  var parsed=parseDate(dateRaw);
-  if(!parsed) parsed={day:1,month:new Date().getMonth()+1,year:new Date().getFullYear()};
-  var df=formatDateForFilename(parsed);
-  var tf=curLabel(tRaw,cur);
-  var mk=MONTHS[parsed.month]+' '+parsed.year;
-  var fn=e+'_'+df+'_'+tf+'.pdf';
-  document.getElementById('pPthPdf').textContent=mk+' > Achat';
-  document.getElementById('pFnPdf').textContent=fn;
-}
-
-function generatePdf(){
-  var errEl=document.getElementById('errPdf');
-  errEl.textContent='';
-  var eRaw=document.getElementById('fE2').value.trim();
-  var dRaw=document.getElementById('fD2').value.trim();
-  var tRaw=document.getElementById('fT2').value.trim();
-  var cur=document.getElementById('fCur2').value||LOCALES[locale].cur;
-
-  if(!eRaw){errEl.textContent='Etablissement manquant';return;}
-  if(!dRaw){errEl.textContent='Date manquante';return;}
-  if(!tRaw){errEl.textContent='Total manquant';return;}
-  if(!pdfFile){errEl.textContent='Fichier PDF manquant';return;}
-
-  var etab=san(eRaw);
-  var parsed=parseDate(dRaw);
-  if(!parsed){errEl.textContent='Format de date invalide';return;}
-  var df=formatDateForFilename(parsed);
-  var tf=curLabel(tRaw,cur);
-  var mk=MONTHS[parsed.month]+' '+parsed.year;
-  pdfName=etab+'_'+df+'_'+tf+'.pdf';
-  var fid=getFolderId(mk,parsed.year);
-  var folderId=fid||ROOT;
-  driveUrl='https://drive.google.com/drive/folders/'+folderId;
-
-  if(!fid){
-    if(!window.confirm('Dossiers Drive pour '+parsed.year+' non configures. Le PDF ira dans le dossier racine. Continuer ?')) return;
-  }
-
-  // Show upload screen
-  document.getElementById('resultImg').style.display='none';
-  document.getElementById('dFn').textContent=pdfName;
-  document.getElementById('dIco').textContent='⏳';
-  document.getElementById('dTitle').textContent='Envoi vers Drive…';
-  document.getElementById('statusBox').className='sbox sup';
-  document.getElementById('statusBox').textContent='⏳ Upload vers Google Drive…';
-  document.getElementById('successBlock').style.display='none';
-  goTo(2);
-
-  // Upload original PDF with new name
-  uploadToDrive(pdfFile, pdfName, folderId);
-}
-
-// ── Utils ──────────────────────────────────────────────────
-function todLocal(){
-  var d=new Date();
-  return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();
-}
-function pad(n){return String(n).padStart(2,'0');}
-function cl(v,def){v=parseFloat(v);return isNaN(v)?def:Math.min(1,Math.max(0,v));}
-function san(s){return s.trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9 -]/g,'').replace(/\s+/g,'_').substring(0,40);}
+window.addEventListener('load', initCheckedState);
+// ── FIN PERSISTANCE ──────────────────────────────────────
 </script>
+
 </body>
 </html>
