@@ -609,6 +609,8 @@ function updateCounters() {
 async function initCheckedState() {
   const state = await loadState();
   window._checkedState = state || {};
+  done = Object.assign({}, done, window._checkedState);
+  try{localStorage.setItem('sp_done',JSON.stringify(done))}catch(e){}
   Object.keys(window._checkedState).forEach(id => {
     if (window._checkedState[id]) {
       const cb = document.querySelector('input[data-id="' + id + '"]');
