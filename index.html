@@ -310,6 +310,24 @@ function replacePhoto(id){
 }
 
 // GOOGLE AUTH
+// AUTO-RENEW TOKEN
+function checkToken(){
+  const tokenTime=parseInt(localStorage.getItem('sp_token_time')||'0');
+  const age=(Date.now()-tokenTime)/1000/60;
+  if(accessToken && age>50){
+    const params=new URLSearchParams({
+      client_id:CLIENT_ID,
+      redirect_uri:window.location.origin+window.location.pathname,
+      response_type:'token',
+      scope:SCOPES,
+      prompt:'none'
+    });
+    window.location.href='https://accounts.google.com/o/oauth2/v2/auth?'+params;
+  }
+}
+setInterval(checkToken,5*60*1000);
+checkToken();
+
 const REDIRECT_URI='https://francktami-bot.github.io/regisseur-sailoe';
 function signIn(){
   const params=new URLSearchParams({
@@ -325,6 +343,7 @@ function checkAuth(){
   const hash=new URLSearchParams(window.location.hash.slice(1));
   if(hash.get('access_token')){
     accessToken=hash.get('access_token');
+    localStorage.setItem('sp_token_time', Date.now().toString());
     try{localStorage.setItem('sp_token',accessToken)}catch(e){}
     window.history.replaceState(null,'',window.location.pathname);
   }
